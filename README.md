@@ -1,0 +1,1 @@
+The only reason why I decided to make a list of these common/rare VM detection technqiues is so that people can create Anti-VM detecting solutions to be able to run malware/viruses that tend to break/stop when they detect a VM 
