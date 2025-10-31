@@ -1,0 +1,1171 @@
+================================================================================
+                    VIRTUAL MACHINE DETECTION TECHNIQUES
+                  COMPREHENSIVE CATALOG WITH COMMONALITY RATINGS
+================================================================================
+
+================================================================================
+GROUP 1: CPU & PROCESSOR-BASED DETECTION
+================================================================================
+COMMONALITY: VERY COMMON | DIFFICULTY: Easy | RELIABILITY: High
+
+DESCRIPTION: Uses CPU instructions to query processor information. The CPUID
+instruction is one of the most reliable and frequently used detection methods.
+
+TECHNIQUES:
+- CPUID Hypervisor Presence Bit - Check bit 31 of ECX register (always 1 when
+  virtualized)
+- CPUID Hypervisor Vendor Strings - Returns "VMwareVMware", "VBoxVBoxVBox", etc.
+- CPU Feature Flags - Missing SSE/AVX instructions or unusual cache sizes
+- CPU Model Checks - Generic CPU models used by hypervisors
+
+WHY COMMON: Simple assembly instruction, 100% reliable, cannot be fully hidden
+without extensive patches.
+
+================================================================================
+GROUP 2: TIMING & PERFORMANCE-BASED DETECTION
+================================================================================
+COMMONALITY: COMMON | DIFFICULTY: Medium | RELIABILITY: High
+
+DESCRIPTION: Measures execution time of instructions. VM exits to the hypervisor
+cause measurable timing delays that differ from bare metal.
+
+TECHNIQUES:
+- RDTSC (Read Time-Stamp Counter) - Measures instruction timing, VM exits add
+  latency
+- RDTSCP Timing - Similar to RDTSC with processor ID
+- Sleep/Delay Timing - Compare expected vs actual sleep duration
+- Instruction Timing - Privileged instructions (SIDT, SGDT) take longer in VMs
+- Performance Counter Discrepancies - PMC analysis shows VM overhead
+- Cache Timing Attacks - CPU cache/TLB behavior differs in VMs
+
+WHY COMMON: Used in sophisticated malware. Hard to hide without affecting
+performance.
+
+================================================================================
+GROUP 3: BIOS & FIRMWARE DETECTION
+================================================================================
+COMMONALITY: VERY COMMON | DIFFICULTY: Easy | RELIABILITY: High
+
+DESCRIPTION: Reads system BIOS and firmware information. Virtual machines often
+expose their identity through manufacturer strings.
+
+TECHNIQUES:
+- SMBIOS/DMI Strings - Manufacturer: "innotek GmbH", "VMware, Inc."
+- ACPI Tables - Table signatures contain VM identifiers
+- System Firmware Queries - Via WMI/UEFI
+- UEFI/EFI Detection - Query EFI variables for VM indicators
+
+WHY COMMON: Single API call to retrieve, extremely reliable, often overlooked
+by VM administrators.
+
+================================================================================
+GROUP 4: WINDOWS REGISTRY DETECTION
+================================================================================
+COMMONALITY: EXTREMELY COMMON | DIFFICULTY: Very Easy | RELIABILITY: Very High
+
+DESCRIPTION: Checks Windows registry for VM-specific keys. This is the #1 most
+common technique in malware.
+
+TECHNIQUES:
+- Guest Additions Keys - HKLM\SOFTWARE\Oracle\VirtualBox Guest Additions
+- VM Service Keys - VBoxGuest, vmci, vmhgfs services
+- Hardware Description - BIOS version strings in registry
+- Network Adapter Keys - Network adapters with VM vendor names
+
+WHY COMMON: Trivially easy to implement, just check if key exists. Used in 80%+
+of VM-aware malware.
+
+================================================================================
+GROUP 5: FILE SYSTEM & DRIVER DETECTION
+================================================================================
+COMMONALITY: EXTREMELY COMMON | DIFFICULTY: Very Easy | RELIABILITY: Very High
+
+DESCRIPTION: Searches for VM tool directories and driver files on disk.
+
+TECHNIQUES:
+- VM Tool Directories - C:\Program Files\VMware\VMware Tools\
+- VM Driver Files - VBoxMouse.sys, vmhgfs.sys, etc.
+- VM Executable Files - vboxtray.exe, vmtoolsd.exe
+- Kernel Driver Enumeration - List loaded drivers
+
+WHY COMMON: Simple file existence check. Often the first thing malware checks.
+
+================================================================================
+GROUP 6: PROCESS & SERVICE DETECTION
+================================================================================
+COMMONALITY: EXTREMELY COMMON | DIFFICULTY: Very Easy | RELIABILITY: Very High
+
+DESCRIPTION: Enumerates running processes and services to find VM-specific ones.
+
+TECHNIQUES:
+- VM Tool Processes - VBoxService.exe, vmtoolsd.exe, qemu-ga.exe
+- Windows Services - Services with names containing "VBox", "VMware"
+- Process Relationships - Unusual parent-child relationships
+- Process Count - Limited number of running processes
+
+WHY COMMON: Process enumeration is trivial. Found in most basic VM detection
+scripts.
+
+================================================================================
+GROUP 7: HARDWARE DEVICE DETECTION
+================================================================================
+COMMONALITY: VERY COMMON | DIFFICULTY: Easy | RELIABILITY: High
+
+DESCRIPTION: Enumerates hardware devices through Device Manager or APIs to find
+virtual devices.
+
+TECHNIQUES:
+- PCI Device Enumeration - Virtual graphics, SCSI controllers, NICs
+- Device Descriptor Strings - "VirtualBox Graphics Adapter", "VMware SVGA II"
+- PCI Vendor/Device IDs - Known VM vendor PCI IDs
+- USB Device Detection - Virtual USB controllers, missing typical devices
+
+WHY COMMON: Device Manager queries are straightforward. Virtual device names
+are obvious giveaways.
+
+================================================================================
+GROUP 8: NETWORK & MAC ADDRESS DETECTION
+================================================================================
+COMMONALITY: VERY COMMON | DIFFICULTY: Easy | RELIABILITY: Very High
+
+DESCRIPTION: Checks network adapter MAC addresses for known VM vendor prefixes.
+
+TECHNIQUES:
+- MAC Address OUI Prefixes
+  * 08:00:27:xx:xx:xx (VirtualBox)
+  * 00:0C:29:xx:xx:xx (VMware)
+  * 00:50:56:xx:xx:xx (VMware)
+- Network Adapter Names - Descriptions contain "Virtual", "VMware"
+- Network Configuration - Default NAT/bridged patterns
+- DNS/DHCP Fingerprinting - Virtual DHCP characteristics
+
+WHY COMMON: Single API call, highly reliable, MAC spoofing often forgotten.
+
+================================================================================
+GROUP 9: DISK & STORAGE DETECTION
+================================================================================
+COMMONALITY: VERY COMMON | DIFFICULTY: Easy | RELIABILITY: Very High
+
+DESCRIPTION: Queries disk model strings and serial numbers that reveal
+virtualization.
+
+TECHNIQUES:
+- Disk Model Strings - "VBOX HARDDISK", "VMware Virtual S", "QEMU HARDDISK"
+- Disk Serial Numbers - Sequential or patterned serials
+- Volume Labels - Labels with VM identifiers
+- SCSI Inquiry Data - Virtual controller responses
+- Disk Size Anomalies - Exactly 20GB, 40GB, 60GB
+- SMART Data - Missing or unusual SMART attributes
+
+WHY COMMON: Simple WMI or API query. Virtual disk names are telltale signs.
+
+================================================================================
+GROUP 10: MEMORY DETECTION
+================================================================================
+COMMONALITY: COMMON | DIFFICULTY: Easy | RELIABILITY: Medium
+
+DESCRIPTION: Checks RAM size patterns and memory artifacts common in VMs.
+
+TECHNIQUES:
+- Memory Size Patterns - Exactly 1GB, 2GB, 4GB (power-of-2)
+- Memory Artifacts - VM-specific memory structures
+- Memory Page Sharing - KSM (Kernel Same-page Merging) detection
+
+WHY COMMON: Easy to query total RAM. VMs often have "perfect" power-of-2
+allocations.
+
+================================================================================
+GROUP 11: INSTRUCTION & CPU BEHAVIOR
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Hard | RELIABILITY: Very High
+
+DESCRIPTION: Advanced techniques using privileged instructions and CPU behavior
+differences.
+
+TECHNIQUES:
+- Privileged Instruction Behavior - SIDT, SGDT, SLDT, SMSW differences
+- Red Pill Technique - SIDT returns different values in VM
+- No-Pill Technique - STR (Store Task Register) execution
+- I/O Communication Backdoors - VMware port 0x5658 ("VX")
+- Exception Handling - Different exception behavior
+- Invalid Operation Handling - Response to invalid opcodes
+
+WHY UNCOMMON: Requires assembly programming. Used only in sophisticated malware.
+
+================================================================================
+GROUP 12: WMI (WINDOWS MANAGEMENT INSTRUMENTATION)
+================================================================================
+COMMONALITY: VERY COMMON | DIFFICULTY: Easy | RELIABILITY: Very High
+
+DESCRIPTION: Uses Windows WMI to query system information that reveals
+virtualization.
+
+TECHNIQUES:
+- Win32_BIOS - Manufacturer, Version, SerialNumber
+- Win32_ComputerSystem - Manufacturer, Model ("VirtualBox", "VMware Virtual
+  Platform")
+- Win32_BaseBoard - Motherboard information
+- Win32_DiskDrive - Disk model strings
+- Win32_NetworkAdapter - Network adapter details
+- Win32_VideoController - Graphics card name
+- Win32_PnPEntity - All plug-and-play devices
+
+WHY COMMON: PowerShell/VBScript one-liners. Widely documented and used.
+
+================================================================================
+GROUP 13: GPU & GRAPHICS DETECTION
+================================================================================
+COMMONALITY: COMMON | DIFFICULTY: Easy | RELIABILITY: High
+
+DESCRIPTION: Identifies virtual graphics cards through device names and
+capabilities.
+
+TECHNIQUES:
+- Graphics Card Identification - "VMware SVGA", "VirtualBox Graphics"
+- GPU Capabilities - Limited features, reduced VRAM
+- OpenGL/DirectX Detection - GL_VENDOR strings contain VM identifiers
+- 3D Acceleration Tests - Performance and feature checks
+
+WHY COMMON: Graphics queries are standard. Virtual GPUs have distinctive names.
+
+================================================================================
+GROUP 14: AUDIO & MULTIMEDIA DETECTION
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Easy | RELIABILITY: Medium
+
+DESCRIPTION: Checks for virtual audio devices and missing multimedia hardware.
+
+TECHNIQUES:
+- Audio Device Names - Virtual audio identifiers
+- Audio Capabilities - Limited features, no hardware acceleration
+- Multimedia Device Absence - No webcam, missing controllers
+
+WHY UNCOMMON: Less reliable as indicator. Some real systems also lack these.
+
+================================================================================
+GROUP 15: SENSOR & HARDWARE MONITORING
+================================================================================
+COMMONALITY: COMMON | DIFFICULTY: Easy | RELIABILITY: Very High
+
+DESCRIPTION: Checks for hardware sensors that VMs almost never emulate.
+
+TECHNIQUES:
+- Temperature Sensors - No CPU temperature monitoring
+- Fan Speed Monitoring - No fan controls
+- Voltage Sensors - Missing voltage monitoring
+- ACPI Thermal Zones - Missing or generic thermal zones
+
+WHY COMMON: Simple check with high accuracy. Real hardware always has
+temperature sensors.
+
+================================================================================
+GROUP 16: USER BEHAVIOR & ENVIRONMENTAL DETECTION
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Medium | RELIABILITY: Medium
+
+DESCRIPTION: Analyzes user behavior patterns and system environment to detect
+sandboxes.
+
+TECHNIQUES:
+- User Interaction Patterns - Mechanical mouse movement, no user activity
+- Desktop Environment - Low resolution, no customization, generic wallpaper
+- File System Artifacts - No browser history, empty Downloads folder
+- System Age Indicators - Recent install, no updates, fresh system
+
+WHY UNCOMMON: Requires sophisticated analysis. Many false positives possible.
+
+================================================================================
+GROUP 17: HYPERVISOR-SPECIFIC TECHNIQUES
+================================================================================
+COMMONALITY: COMMON | DIFFICULTY: Easy-Medium | RELIABILITY: Very High
+
+DESCRIPTION: Detection methods specific to particular hypervisors (VMware,
+VirtualBox, etc.).
+
+TECHNIQUES:
+- VMware Specific - VMware Tools, backdoor I/O port 0x5658, "VMXh" magic number
+- VirtualBox Specific - Oracle/innotek strings, VBox* prefixes, \\VBOXSVR\
+  shares
+- Hyper-V Specific - Microsoft Corporation, VMBus, integration services
+- QEMU/KVM Specific - QEMU device names, Bochs BIOS, VirtIO drivers
+- Xen Specific - Xen device names, PV drivers, XenStore
+
+WHY COMMON: Well-documented signatures. Each hypervisor has unique fingerprints.
+
+================================================================================
+GROUP 18: ADVANCED & RESEARCH TECHNIQUES
+================================================================================
+COMMONALITY: RARE | DIFFICULTY: Very Hard | RELIABILITY: High
+
+DESCRIPTION: Cutting-edge techniques seen mostly in research papers and APT
+malware.
+
+TECHNIQUES:
+- Speculative Execution - Spectre/Meltdown mitigation differences
+- Intel SGX Detection - SGX enclave behavior differences
+- Nested Virtualization - Detect hypervisor-in-hypervisor
+- Performance Degradation - Overall slowdown patterns
+- Side-Channel Analysis - Power consumption, EM emissions, acoustic
+
+WHY RARE: Extremely complex. Requires specialized knowledge and equipment.
+
+================================================================================
+GROUP 19: SANDBOX & ANALYSIS TOOL DETECTION
+================================================================================
+COMMONALITY: COMMON (in targeted malware) | DIFFICULTY: Medium |
+RELIABILITY: High
+
+DESCRIPTION: Detects automated malware analysis sandboxes specifically.
+
+TECHNIQUES:
+- Known Sandbox Artifacts - Cuckoo, Joe Sandbox, Any.run files
+- Analysis Agent Processes - agent.exe, analyzer.exe
+- API Hooking Detection - Detect hooked system functions
+- Debugging Detection - IsDebuggerPresent, CheckRemoteDebuggerPresent
+- Monitoring Tool Detection - Process Monitor, API Monitor, Wireshark
+
+WHY COMMON (in targeted malware): Modern malware specifically targets sandboxes.
+Essential for evasion.
+
+================================================================================
+GROUP 20: NETWORK & INTERNET CONNECTIVITY
+================================================================================
+COMMONALITY: COMMON (in advanced malware) | DIFFICULTY: Easy-Medium |
+RELIABILITY: Medium-High
+
+DESCRIPTION: Tests network behavior to detect sandbox limitations or monitoring.
+
+TECHNIQUES:
+- Internet Connectivity Checks - Limited access, fake responses, DNS sinkholing
+- Proxy & Filtering Detection - Unusual proxies, SSL/TLS interception
+- Geolocation Anomalies - IP vs location mismatch, datacenter IPs
+- External Service Checks - Cannot reach specific domains
+
+WHY COMMON: Essential for malware that needs C2 communication. Easy to implement.
+
+================================================================================
+GROUP 21: COMBINED & SCORING-BASED DETECTION
+================================================================================
+COMMONALITY: VERY COMMON (best practice) | DIFFICULTY: Easy |
+RELIABILITY: Very High
+
+DESCRIPTION: Uses multiple detection methods and combines results for high
+confidence.
+
+TECHNIQUES:
+- Multi-Vector Scoring - Each positive adds points, threshold decision
+- Weighted Detection - Some indicators more reliable than others
+- Time-Delayed Checks - Run checks at different stages
+- Redundant Verification - Verify detections multiple ways
+- Heuristic Analysis - Combine weak indicators
+
+WHY COMMON: Industry best practice. Minimizes false positives/negatives.
+
+================================================================================
+GROUP 22: MICROARCHITECTURAL & CPU STATE FINGERPRINTING
+================================================================================
+COMMONALITY: RARE | DIFFICULTY: Very Hard | RELIABILITY: High
+
+DESCRIPTION: Advanced CPU-level fingerprinting using MSRs and performance
+monitoring.
+
+TECHNIQUES:
+- CPU Microcode Version Mismatch - Check MSR 0x8B, outdated microcode in VMs
+- Uncore PMU - Intel performance counter patterns
+- RAPL Energy Counters - Power consumption (MSR 0x611) shows flat/impossible
+  values
+- AMD Topology Extension - Node ID mismatches
+- Cache Allocation Technology - Detect cache partitioning (Intel RDT)
+
+WHY RARE: Requires privileged access and deep CPU knowledge. APT-level only.
+
+================================================================================
+GROUP 23: VIRTUALIZATION EXTENSION BEHAVIOR
+================================================================================
+COMMONALITY: RARE | DIFFICULTY: Very Hard | RELIABILITY: Very High
+
+DESCRIPTION: Exploits Intel VMX/AMD SVM virtualization extension behavior.
+
+TECHNIQUES:
+- VMX Preemption Timer - Timer inconsistencies in nested VMs
+- EPT Violation Timing - Extended Page Table fault latency
+- VMCALL/VMMCALL Hypercalls - Hypercall fingerprinting
+- VMCS Shadowing - Nested virtualization artifacts
+
+WHY RARE: Extremely advanced. Requires kernel-mode code and CPU expertise.
+
+================================================================================
+GROUP 24: MODERN & CONFIDENTIAL VM DETECTION
+================================================================================
+COMMONALITY: EMERGING | DIFFICULTY: Medium | RELIABILITY: High
+
+DESCRIPTION: Detection methods for new confidential computing technologies.
+
+TECHNIQUES:
+- Intel TDX - Trust Domain Extensions CPUID leaves
+- AMD SEV/SEV-ES/SEV-SNP - Secure Encrypted Virtualization detection
+- ARM Virtualization - ARM-specific registers and traps
+- Apple Silicon VMs - M1/M2/M3 VM detection via sysctl
+- WSL2 Detection - Windows Subsystem for Linux indicators
+
+WHY EMERGING: New technologies. Growing importance as confidential VMs become
+standard.
+
+================================================================================
+GROUP 25: CONTAINER & LIGHTWEIGHT ISOLATION DETECTION
+================================================================================
+COMMONALITY: VERY COMMON (Linux) | DIFFICULTY: Very Easy | RELIABILITY: Very
+High
+
+DESCRIPTION: Detects Docker, LXC, and other container environments.
+
+TECHNIQUES:
+- Cgroup Fingerprints - /proc/1/cgroup contains "docker", "lxc"
+- Filesystem Overlays - overlay, overlay2, aufs in /proc/mounts
+- Docker/Podman Artifacts - /.dockerenv, environment variables
+- systemd-nspawn Detection - Container-specific environment variables
+
+WHY COMMON: Containers increasingly used for malware analysis. Simple file
+checks.
+
+================================================================================
+GROUP 26: CLOUD & HYPERSCALER FINGERPRINTS
+================================================================================
+COMMONALITY: COMMON (in cloud-aware malware) | DIFFICULTY: Easy |
+RELIABILITY: Very High
+
+DESCRIPTION: Identifies major cloud provider virtual machines.
+
+TECHNIQUES:
+- AWS Nitro/EC2 - DMI "Amazon EC2", specific MAC OUI, CPU serial
+- Microsoft Azure - Unique ChassisAssetTag pattern, Hyper-V + Microsoft
+- Google Cloud Platform - BIOS "Google Compute Engine"
+- Oracle Cloud - Product name patterns, Oracle BIOS
+
+WHY COMMON: Cloud VMs dominate malware sandboxes. Well-documented fingerprints.
+
+================================================================================
+GROUP 27: ADVANCED ANTI-DEBUG & ANTI-ANALYSIS
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Hard | RELIABILITY: High
+
+DESCRIPTION: Sophisticated techniques to detect debugging and analysis tools.
+
+TECHNIQUES:
+- VEH/SEH Frame Walking - Stack walk reveals hooked handlers
+- TLS Callback Timing - Callbacks run before main()
+- Fiber Local Storage Hooking - Sandbox FLS callback detection
+- Heaven's Gate - WOW64 syscall transitions fail in emulators
+
+WHY UNCOMMON: Requires advanced programming. Used in targeted/APT malware only.
+
+================================================================================
+GROUP 28: HIGH-RESOLUTION TIME & ENTROPY SOURCES
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Medium | RELIABILITY: Medium-High
+
+DESCRIPTION: Uses high-precision timing sources to detect VM overhead.
+
+TECHNIQUES:
+- Query Performance Counter Drift - QPC drift under load
+- GetTickCount64 Skew - Non-monotonic jumps in VMs
+- System Firmware Table Query - Incomplete ACPI/SMBIOS data
+
+WHY UNCOMMON: More complex than basic timing. Used in sophisticated evasion.
+
+================================================================================
+GROUP 29: HUMAN BEHAVIORAL HEURISTICS
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Medium | RELIABILITY: Medium
+
+DESCRIPTION: Analyzes human interaction patterns to detect automation/sandboxes.
+
+TECHNIQUES:
+- Cursor Acceleration Curve - Synthetic vs natural mouse movement
+- Keyboard Typing Delay - Human (log-normal) vs bot (uniform) timing
+- Window Manager Artifacts - No DWM composition, default theme
+- Event Log Gaps - No user logon events, missing Windows Update history
+
+WHY UNCOMMON: Many false positives. Sandboxes increasingly simulate human
+behavior.
+
+================================================================================
+GROUP 30: STEALTH & ANTI-ANTI-VM COUNTERMEASURES
+================================================================================
+COMMONALITY: N/A (Defensive) | DIFFICULTY: Very Hard | RELIABILITY: N/A
+
+DESCRIPTION: Techniques to hide VM artifacts from detection (defender
+perspective).
+
+TECHNIQUES:
+- Hypervisor Patching - Modify CPUID, SMBIOS in RAM
+- Nested Virtualization - VM-inside-VM to mask artifacts
+- Custom Hypervisor - Minimal hypervisor with no guest tools
+- Bare-Metal Droppers - Check environment before deploying payload
+
+WHY N/A: These are defensive measures, not detection techniques.
+
+================================================================================
+GROUP 31: GPU-SPECIFIC ADVANCED CHECKS
+================================================================================
+COMMONALITY: RARE | DIFFICULTY: Hard | RELIABILITY: Medium-High
+
+DESCRIPTION: Advanced GPU fingerprinting using modern APIs.
+
+TECHNIQUES:
+- Vulkan/Metal Fingerprinting - Device UUIDs, driver versions, extensions
+- GPU Memory Clock Behavior - Static clocks in virtual GPUs
+- Shader Compilation Timing - Consistent timing patterns
+- GPU Context Switching - Higher overhead in VMs
+
+WHY RARE: Requires graphics programming expertise. Niche use cases.
+
+================================================================================
+GROUP 32: STORAGE & I/O PATTERN ANALYSIS
+================================================================================
+COMMONALITY: RARE | DIFFICULTY: Hard | RELIABILITY: Medium-High
+
+DESCRIPTION: Analyzes storage device behavior and I/O patterns.
+
+TECHNIQUES:
+- NVMe Identify Controller - Generic firmware versions, missing serials
+- Disk Wear Leveling - SSDs show wear, virtual disks don't
+- I/O Scheduler Fingerprinting - Simpler schedulers in VMs
+- TRIM/Discard Behavior - Different handling in virtual disks
+
+WHY RARE: Requires low-level storage knowledge. Minimal practical benefit.
+
+================================================================================
+GROUP 33: PLATFORM-SPECIFIC DETECTION
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Easy-Medium | RELIABILITY: High
+
+DESCRIPTION: Detection for specific platforms (ChromeOS, Android, RISC-V).
+
+TECHNIQUES:
+- ChromeOS/Crostini - /dev/vsock, systemd-detect-virt
+- Android Emulator - Goldfish drivers, /sys/qemu_trace, perfect sensor data
+- RISC-V Virtualization - H-extension CSR registers
+
+WHY UNCOMMON: Platform-specific. Only relevant for targeted malware.
+
+================================================================================
+GROUP 34: NETWORK BEHAVIOR ANALYSIS
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Medium-Hard | RELIABILITY: Medium-High
+
+DESCRIPTION: Fingerprints network stack implementation and behavior.
+
+TECHNIQUES:
+- TCP/IP Stack Fingerprinting - Window scaling, TTL, timestamps differ
+- Network Latency Floor - VMs have minimum ~0.1ms latency
+- Packet Loss Patterns - Virtual NICs rarely drop packets
+- ARP Table Characteristics - Limited MAC diversity in NAT mode
+
+WHY UNCOMMON: Requires network programming. OS fingerprinting tools use these.
+
+================================================================================
+GROUP 35: FIRMWARE & BOOT PROCESS
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Medium | RELIABILITY: Medium-High
+
+DESCRIPTION: Analyzes firmware configuration and boot process.
+
+TECHNIQUES:
+- Secure Boot Configuration - VMs often disabled or use generic keys
+- TPM Version Inconsistencies - vTPM 2.0 behavior differs
+- UEFI Boot Order - Simplified boot configurations
+- ACPI _OSI Queries - Virtual firmware returns different strings
+
+WHY UNCOMMON: Requires UEFI/firmware knowledge. Some real systems also vary.
+
+================================================================================
+GROUP 36: PERIPHERAL DEVICE ABSENCE
+================================================================================
+COMMONALITY: COMMON | DIFFICULTY: Very Easy | RELIABILITY: Very High
+
+DESCRIPTION: Checks for peripherals that real systems have but VMs don't.
+
+TECHNIQUES:
+- Bluetooth Adapter Missing - Nearly all modern systems have Bluetooth
+- Battery/Power Source - Laptops have battery info, VMs don't
+- Ambient Light Sensors - Modern laptops have these, VMs never do
+- Accelerometer/Gyroscope - Present in modern devices, absent in VMs
+- Fingerprint Readers - Common in laptops, missing in VMs
+
+WHY COMMON: Extremely reliable for laptop VMs. Simple device enumeration.
+
+================================================================================
+GROUP 37: MODERN WINDOWS-SPECIFIC
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Medium | RELIABILITY: High
+
+DESCRIPTION: Windows 10/11 specific features and security technologies.
+
+TECHNIQUES:
+- Windows Sandbox Detection - Specific registry keys and services
+- Credential Guard/VBS - Check Virtual Secure Mode
+- HVCI Detection - Hypervisor-Enforced Code Integrity status
+
+WHY UNCOMMON: Newer features. Requires Windows 10+ knowledge.
+
+================================================================================
+GROUP 38: KERNEL/SYSTEM CALL BEHAVIOR
+================================================================================
+COMMONALITY: RARE | DIFFICULTY: Hard | RELIABILITY: High
+
+DESCRIPTION: Measures kernel-level operation timing and behavior.
+
+TECHNIQUES:
+- Syscall Latency - VMs show increased overhead
+- Context Switch Timing - Thread switches slower
+- Interrupt Handling Delays - Virtual interrupt controllers add latency
+- Process/Thread Creation Overhead - Higher overhead in VMs
+
+WHY RARE: Requires kernel programming. Sophisticated malware only.
+
+================================================================================
+GROUP 39: BROWSER/JAVASCRIPT-BASED DETECTION
+================================================================================
+COMMONALITY: VERY COMMON (web-based malware) | DIFFICULTY: Easy |
+RELIABILITY: Medium-High
+
+DESCRIPTION: Client-side JavaScript detection in web browsers.
+
+TECHNIQUES:
+- WebGL Renderer Strings - Virtual GPU identifiers exposed
+- Canvas Fingerprinting - Rendering differences in virtual GPUs
+- WebRTC Local IP - Exposes virtual network IPs (10.0.2.0/24)
+- Battery API - Always "no battery" in VMs
+- navigator.hardwareConcurrency - Suspicious round numbers (1,2,4,8)
+
+WHY COMMON: Widespread in malicious websites. Easy JavaScript code.
+
+================================================================================
+GROUP 40: FILE SYSTEM METADATA
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Easy | RELIABILITY: Medium
+
+DESCRIPTION: Analyzes filesystem timestamps and patterns.
+
+TECHNIQUES:
+- Creation Timestamp Anomalies - All files created around same time
+- Inode Patterns - Sequential inodes suggest fresh filesystem
+- NTFS USN Journal - Limited update sequence history
+- File Access Time Patterns - No gradual aging
+
+WHY UNCOMMON: Easy to check but many false positives. Fresh installs look
+similar.
+
+================================================================================
+GROUP 41: HYPERVISOR MEMORY FORENSICS & HYPERCALL TRACING
+================================================================================
+COMMONALITY: VERY RARE | DIFFICULTY: Extremely Hard | RELIABILITY: Very High
+
+DESCRIPTION: Advanced memory analysis and hypervisor interaction monitoring.
+
+TECHNIQUES:
+- Hypervisor Memory Scanning - Scan RAM for VMCS, VMCB structures
+- Hypercall Trap Analysis - Hook VMCALL/VMEXIT handlers
+- VMEXIT Reason Statistics - Count exit reasons under load
+- Hypervisor Page Table Walk - Walk EPT/NPT tables
+
+WHY RARE: Requires kernel driver and deep hypervisor knowledge. Research-grade.
+
+================================================================================
+GROUP 42: VIRTUAL MACHINE GUEST AGENT COMMUNICATION
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Medium | RELIABILITY: High
+
+DESCRIPTION: Detects guest-host communication channels.
+
+TECHNIQUES:
+- Guest-Host Channels - VMCI sockets (vsock), HGCM, VMBus
+- Shared Folder Mounts - \\VBOXSVR\, \\VMware\, hgfs
+- Clipboard/Drag-Drop Sync - Shared clipboard detection
+
+WHY UNCOMMON: Requires understanding of VM tools. Not always present.
+
+================================================================================
+GROUP 43: VIRTUALIZATION-AWARE MALWARE BEHAVIOR
+================================================================================
+COMMONALITY: COMMON (in VM-aware malware) | DIFFICULTY: Easy | RELIABILITY: N/A
+
+DESCRIPTION: Malware behaviors specifically designed for VMs (not detection per
+se).
+
+TECHNIQUES:
+- VM-Aware Sleep Skipping - Skip delays when VM detected
+- Fake User Input Injection - Synthetic mouse/keyboard events
+- Screen Capture Artifacts - Identical pixels across frames
+
+WHY COMMON: Standard evasion techniques once VM is detected.
+
+================================================================================
+GROUP 44: LINUX-SPECIFIC KERNEL DETECTION
+================================================================================
+COMMONALITY: COMMON (Linux) | DIFFICULTY: Easy | RELIABILITY: Very High
+
+DESCRIPTION: Linux-specific detection through kernel interfaces.
+
+TECHNIQUES:
+- /proc/sched_debug - Shows "kvm" or "qemu" in CPU runqueue
+- dmesg Hypervisor Messages - "Booting paravirtualized kernel on KVM"
+- /sys/hypervisor/ - /sys/hypervisor/type = "xen", "kvm"
+- KVM Clocksource - "kvm-clock" in available clocksources
+
+WHY COMMON: Simple file/command checks. Highly reliable on Linux.
+
+================================================================================
+GROUP 45: MACOS / APPLE SILICON VM DETECTION
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Medium | RELIABILITY: High
+
+DESCRIPTION: macOS-specific detection techniques.
+
+TECHNIQUES:
+- IORegistryExplorer - IOProviderClass reveals VM devices
+- kextstat Loaded Extensions - com.parallels, com.vmware, org.virtualbox
+- sysctl vm.* - Virtual machine parameters differ
+- launchd PLIST Overrides - VM tool launch agents
+
+WHY UNCOMMON: macOS less common in malware analysis. Requires Mac knowledge.
+
+================================================================================
+GROUP 46: HARDWARE SECURITY MODULE (HSM) & TPM ARTIFACTS
+================================================================================
+COMMONALITY: RARE | DIFFICULTY: Hard | RELIABILITY: Medium-High
+
+DESCRIPTION: Detects virtual TPM and missing hardware security modules.
+
+TECHNIQUES:
+- TPM Event Log - Static or zeroed PCR values
+- Intel ME/AMD PSP - Missing or emulated firmware interfaces
+- Secure Boot DBX Checks - Blacklist contains VM-signed keys
+
+WHY RARE: Requires TPM programming. Limited practical use.
+
+================================================================================
+GROUP 47: EMULATION vs VIRTUALIZATION vs CONTAINER
+================================================================================
+COMMONALITY: UNCOMMON | DIFFICULTY: Easy | RELIABILITY: High
+
+DESCRIPTION: Distinguishes between emulation, virtualization, and
+containerization.
+
+TECHNIQUES:
+- Emulator Detection - CPUID returns "QEMU Virtual CPU"
+- Full System Emulation - Extremely slow execution (Bochs, QEMU TCG)
+- Container vs VM - PID 1 namespace, /proc/1/exe differences
+
+WHY UNCOMMON: Specific use cases. Important for precise classification.
+
+================================================================================
+GROUP 48: AI / BEHAVIORAL ANOMALY DETECTION
+================================================================================
+COMMONALITY: EMERGING | DIFFICULTY: Very Hard | RELIABILITY: High
+
+DESCRIPTION: Machine learning-based detection of automated analysis.
+
+TECHNIQUES:
+- ML-Based Fingerprinting - Train on telemetry patterns
+- System Call Sequence Analysis - N-gram modeling of syscalls
+- File Access Entropy - High entropy indicates automation
+
+WHY EMERGING: Cutting-edge research. Requires ML expertise and training data.
+
+================================================================================
+GROUP 49: QUANTUM & FUTURE TECH DETECTION
+================================================================================
+COMMONALITY: THEORETICAL | DIFFICULTY: Varies | RELIABILITY: Unknown
+
+DESCRIPTION: Future and experimental detection techniques.
+
+TECHNIQUES:
+- Quantum Simulator Detection - Qiskit, Cirq fake qubit coherence times
+- Confidential Computing Artifacts - TDX Quote vs real attestation
+- Homomorphic Encryption Overhead - Extreme slowdown in FHE libraries
+
+WHY THEORETICAL: Mostly academic. Limited real-world application currently.
+
+================================================================================
+                        DETECTION DIFFICULTY SUMMARY
+================================================================================
+
+EASY TO HIDE (Low Reliability for Detection):
+- SMBIOS/DMI strings
+- Registry keys
+- Files and directories
+- MAC addresses
+- Disk model strings
+- Process names
+- Container environment variables
+- Browser fingerprinting artifacts
+- WebGL renderer strings
+- Shared folder mounts
+- Clipboard sync
+
+NOTE: These can be modified by VM administrators, but most setups leave them
+default.
+
+--------------------------------------------------------------------------------
+
+MEDIUM DIFFICULTY TO HIDE:
+- PCI device IDs
+- Network adapter configuration
+- Guest additions/tools
+- Service names
+- WMI queries
+- Cloud provider metadata
+- NVMe controller data
+- TPM behavior
+- UEFI boot configuration
+- Kernel extensions (kexts)
+- VMCI/vsock channels
+
+NOTE: Require some technical knowledge to hide, but still achievable.
+
+--------------------------------------------------------------------------------
+
+HARD TO HIDE (High Reliability):
+- CPUID hypervisor bit
+- Temperature sensors
+- USB device patterns
+- Firmware interfaces
+- Memory page sharing
+- MSR-based microcode/RAPL
+- TDX/SEV CPUID leaves
+- Battery/power source information
+- Sensor hardware absence (accelerometer, etc.)
+- Bluetooth adapter absence
+- Syscall latency patterns
+- Hypercall frequency
+- EPT/NPT table structure
+
+NOTE: Require hypervisor source modifications or kernel patches. Most VM setups
+cannot hide these.
+
+--------------------------------------------------------------------------------
+
+VERY HARD TO HIDE (Extremely High Reliability):
+- Timing (RDTSC/RDTSCP/QPC)
+- Cache timing attacks
+- Instruction behavior differences
+- Performance characteristics
+- Side-channel analysis
+- Speculative execution differences
+- VMX/EPT timing
+- Human input entropy
+- Network latency floor
+- TCP/IP stack fingerprints
+- GPU context switching overhead
+- I/O scheduler behavior
+- VMEXIT reason bursts
+- ML behavioral entropy
+
+NOTE: Fundamental to how virtualization works. Cannot be fully hidden without
+breaking virtualization or severe performance impact.
+
+================================================================================
+                 PRACTICAL USAGE PATTERNS IN REAL MALWARE
+================================================================================
+
+TIER 1: Script Kiddies & Basic Malware (80% of samples)
+--------------------------------------------------------------------------------
+DETECTION METHODS USED:
+1. Check for VM files (VBoxService.exe, vmtoolsd.exe)
+2. Check registry keys (VirtualBox Guest Additions, VMware Tools)
+3. Query WMI for "VirtualBox" or "VMware" in manufacturer
+4. Check MAC address prefix
+
+SOPHISTICATION: Very low. 3-10 lines of code.
+
+--------------------------------------------------------------------------------
+
+TIER 2: Commodity Malware & Ransomware (15% of samples)
+--------------------------------------------------------------------------------
+DETECTION METHODS USED:
+1. All Tier 1 techniques
+2. CPUID hypervisor bit check
+3. Disk model string check ("VBOX HARDDISK")
+4. Temperature sensor absence
+5. Device enumeration (virtual graphics card)
+6. Multiple checks with scoring system (5-10 indicators)
+
+SOPHISTICATION: Medium. 50-200 lines of code.
+
+--------------------------------------------------------------------------------
+
+TIER 3: Advanced Malware & Targeted Attacks (4% of samples)
+--------------------------------------------------------------------------------
+DETECTION METHODS USED:
+1. All Tier 1 & 2 techniques
+2. RDTSC timing attacks
+3. Instruction timing (SIDT, SGDT)
+4. Sandbox-specific artifacts (Cuckoo, Joe Sandbox)
+5. API hooking detection
+6. Debugging detection (IsDebuggerPresent)
+7. Network behavior analysis
+8. Human behavior heuristics
+9. Weighted scoring with 20+ indicators
+
+SOPHISTICATION: High. 500+ lines of code, assembly required.
+
+--------------------------------------------------------------------------------
+
+TIER 4: APT & Nation-State Malware (<1% of samples)
+--------------------------------------------------------------------------------
+DETECTION METHODS USED:
+1. All lower tier techniques
+2. MSR queries (microcode, RAPL energy)
+3. Cache timing attacks
+4. VMX/EPT timing analysis
+5. Side-channel analysis
+6. Speculative execution fingerprinting
+7. Hypervisor memory forensics
+8. Custom anti-analysis techniques
+9. ML-based behavioral anomaly detection
+10. Comprehensive multi-stage verification
+
+SOPHISTICATION: Extremely high. Requires deep systems programming expertise.
+
+================================================================================
+                          EFFECTIVENESS MATRIX
+================================================================================
+
+Technique Group          | Common | Easy | Reliable | Easy to Hide
+-------------------------|--------|------|----------|-------------
+Registry Keys            | *****  | **** | *****    | *****
+Process Detection        | *****  | **** | *****    | *****
+File System              | *****  | **** | *****    | *****
+MAC Address              | *****  | **** | *****    | ****
+CPUID                    | *****  | **** | *****    | **
+WMI Queries              | *****  | **** | *****    | ****
+Disk Model               | *****  | **** | *****    | ****
+BIOS/SMBIOS              | *****  | **** | *****    | ****
+Device Enumeration       | ****   | **** | ****     | ***
+Temperature Sensors      | ****   | **** | *****    | **
+Peripheral Absence       | ****   | **** | *****    | *
+Timing (RDTSC)           | ***    | ***  | *****    | *
+Container Detection      | ****   | **** | *****    | ***
+Cloud Fingerprints       | ***    | **** | *****    | **
+Browser/JavaScript       | ****   | **** | ***      | ***
+Instruction Behavior     | **     | **   | *****    | *
+MSR Queries              | *      | **   | ****     | *
+Cache Timing             | *      | *    | ****     | 
+Hypervisor Forensics     |        |      | *****    | 
+Side-Channel             |        |      | ****     | 
+
+Legend: * = 1 star, ***** = 5 stars, blank = 0 stars
+
+================================================================================
+              TOP 10 MOST PRACTICAL TECHNIQUES (For Malware Authors)
+================================================================================
+
+1. Registry Key Checks - Easiest, most reliable
+2. Process Enumeration - Simple and effective
+3. File System Checks - Obvious VM tool files
+4. WMI Queries - One-liner checks
+5. MAC Address Prefix - Single API call
+6. CPUID Hypervisor Bit - Cannot be hidden
+7. Disk Model Strings - Reliable identifier
+8. Temperature Sensor Absence - High accuracy
+9. Device Enumeration - Virtual device names
+10. Scoring System - Combine 5-10 checks for confidence
+
+================================================================================
+             TOP 10 MOST RELIABLE TECHNIQUES (Hardest to Hide)
+================================================================================
+
+1. RDTSC Timing Attacks - Fundamental to virtualization
+2. Temperature Sensor Absence - Real hardware always has these
+3. Peripheral Device Absence (Bluetooth, Battery, Sensors)
+4. CPUID Hypervisor Bit - Cannot be fully hidden
+5. Cache Timing Attacks - CPU architecture differences
+6. Instruction Behavior - Privileged instructions differ
+7. Network Latency Floor - Minimum VM overhead
+8. Syscall Latency - Kernel transition overhead
+9. Multiple Device Absence - Combination of missing hardware
+10. Behavioral ML Anomaly Detection - Detects automation patterns
+
+================================================================================
+              DEFENSE RECOMMENDATIONS (For Analysis Environments)
+================================================================================
+
+MINIMUM EFFORT (Defeats 80% of malware):
+--------------------------------------------------------------------------------
+- Remove/rename VM tool files
+- Delete VM registry keys
+- Change MAC address to real manufacturer
+- Modify SMBIOS strings (manufacturer, product, BIOS)
+- Rename disk model string
+- Use nested virtualization to hide CPUID bit
+
+--------------------------------------------------------------------------------
+
+MEDIUM EFFORT (Defeats 95% of malware):
+--------------------------------------------------------------------------------
+- All minimum effort steps
+- Add fake temperature sensors
+- Populate browser history and file system
+- Add desktop customization
+- Install real applications
+- Add fake USB devices
+- Simulate human interaction patterns
+- Age the system (run for days before analysis)
+
+--------------------------------------------------------------------------------
+
+HIGH EFFORT (Defeats 99% of malware):
+--------------------------------------------------------------------------------
+- All medium effort steps
+- Use bare-metal analysis
+- Patch hypervisor to hide timing artifacts
+- Implement cache timing countermeasures
+- Use confidential VMs (TDX/SEV-SNP)
+- Custom minimal hypervisor
+- Hardware-based analysis (expensive)
+
+--------------------------------------------------------------------------------
+
+APT-LEVEL DEFENSE (Defeats 99.9%+):
+--------------------------------------------------------------------------------
+- Bare-metal only
+- No virtualization at all
+- Physical hardware rotation
+- Air-gapped analysis
+- Custom analysis tools
+- Extremely expensive and slow
+
+================================================================================
+                            IMPORTANT NOTES
+================================================================================
+
+1. Scoring Systems Are Standard: Modern malware checks 5-20 indicators and uses
+   threshold-based decisions
+
+2. No Single Perfect Detection: Each technique has false positives/negatives
+
+3. Arms Race Continues: Detection and anti-detection constantly evolve
+
+4. Context Matters: Web malware uses browser techniques, native malware uses
+   system techniques
+
+5. Confidential VMs Change Game: TDX/SEV hide traditional hypervisor but expose
+   new CPUID leaves
+
+6. Containers Are Different: Container detection is fundamentally different from
+   VM detection
+
+7. Cloud Dominates: Most modern sandboxes run in AWS/Azure/GCP
+
+8. Mobile Is Separate: Android/iOS require completely different techniques
+
+9. Timing Is King: Timing-based attacks are hardest to hide without performance
+   impact
+
+10. Peripheral Absence Is Gold: For laptop VMs, missing battery/Bluetooth/
+    sensors is nearly 100% reliable
+
+11. Browser-based Detection: Increasingly common in web malware
+
+12. Mobile and ARM Platforms: Require specialized techniques
+
+13. Peripheral Device Absence: Highly reliable for laptop VMs
+
+14. Network Stack Fingerprinting: Works across OS boundaries
+
+15. File System Metadata: Reveals snapshot/restore usage
+
+16. GPU Virtualization: Still maturing; many artifacts remain
+
+17. Modern Windows Isolation: Creates new detection vectors
+
+18. Combined Peripheral + Behavior: Approaches 99% accuracy
+
+19. Hypervisor Memory Forensics: Bypasses most stealth techniques
+
+20. Behavioral ML Models: Detect automation even in hardened VMs
+
+================================================================================
+                        COMMON MISTAKE PATTERNS
+================================================================================
+
+FALSE POSITIVES:
+--------------------------------------------------------------------------------
+- Fresh Windows installation -> looks like VM
+- Minimal Linux server -> no GUI, looks like container
+- Low-end hardware -> limited features, looks virtual
+- Corporate images -> standardized, looks like VM snapshot
+
+FALSE NEGATIVES:
+--------------------------------------------------------------------------------
+- Well-configured bare-metal analysis
+- Extremely hardened VMs with all artifacts removed
+- Confidential VMs with proper configuration
+- Hardware-based analysis systems
+
+================================================================================
+                    RECOMMENDED DETECTION STRATEGY
+================================================================================
+
+For malware authors targeting sandboxes:
+
+STEP 1: Quick checks (< 100ms)
+--------------------------------------------------------------------------------
+- Check 3-5 obvious indicators (files, registry, processes)
+- If ANY found -> VM detected
+
+STEP 2: Medium checks (< 1 second)
+--------------------------------------------------------------------------------
+- CPUID hypervisor bit
+- WMI queries (3-4 key ones)
+- MAC address
+- Disk model
+- Score: each positive +1 point
+- If score >= 2 -> VM detected
+
+STEP 3: Deep checks (< 5 seconds)
+--------------------------------------------------------------------------------
+- Temperature sensors
+- Device enumeration
+- Peripheral absence
+- RDTSC timing (simple)
+- Score: each positive +2 points
+- If score >= 3 -> VM detected
+
+STEP 4: Confidence level
+--------------------------------------------------------------------------------
+- Low (1-2 indicators) -> Maybe VM, proceed with caution
+- Medium (3-5 indicators) -> Likely VM, limit activity
+- High (6+ indicators) -> Definitely VM, abort/sleep/benign behavior
+
+================================================================================
+                              CONCLUSION
+================================================================================
+
+The techniques in this catalog range from TRIVIALLY EASY (checking if a file
+exists) to RESEARCH-GRADE (hypervisor memory forensics). The vast majority of
+malware uses simple techniques from Groups 4-6 (registry, files, processes),
+while advanced malware combines 20+ indicators.
+
+KEY TAKEAWAY: No single technique is perfect. The combination of multiple
+techniques provides confidence. The arms race between detection and anti-
+detection continues to evolve.
+
+================================================================================
+                          DOCUMENT METADATA
+================================================================================
+
+Total Technique Groups: 49
+Individual Techniques: 200+
+Reliability Range: Low to Very High
+Implementation Difficulty: Trivial to Extremely Hard
+Real-World Usage: 80% use Groups 4-8, 15% use Groups 1-15, 4% use Groups 16-27,
+                  <1% use Groups 28+
+
+================================================================================
+Last Updated: 2025
+Reflects current state of VM detection techniques including modern confidential
+computing, containers, cloud providers, and emerging ML-based methods.
+================================================================================
