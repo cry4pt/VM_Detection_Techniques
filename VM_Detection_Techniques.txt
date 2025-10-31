@@ -1,0 +1,1292 @@
+================================================================================
+                    VIRTUAL MACHINE DETECTION TECHNIQUES
+                          COMPREHENSIVE CATALOG
+================================================================================
+
+===============================================================================
+GROUP 1: CPU & PROCESSOR-BASED DETECTION
+===============================================================================
+
+1.1 CPUID HYPERVISOR PRESENCE BIT
+    - CPUID EAX=1, check ECX bit 31 (hypervisor present flag)
+    - Always returns 1 when virtualized
+
+1.2 CPUID HYPERVISOR VENDOR STRINGS
+    - CPUID EAX=0x40000000 returns vendor signature:
+      * VMwareVMware (VMware)
+      * VBoxVBoxVBox (VirtualBox)
+      * Microsoft Hv (Hyper-V)
+      * KVMKVMKVM (KVM)
+      * XenVMMXenVMM (Xen)
+
+1.3 CPU FEATURE FLAGS
+    - Missing or unexpected CPU features (SSE, AVX, AES-NI)
+    - Unusual CPU cache sizes
+    - Virtual CPU count anomalies
+    - Limited CPU capabilities compared to advertised model
+
+1.4 CPU MODEL & FAMILY CHECKS
+    - Generic CPU models used by hypervisors
+    - Mismatched CPU branding strings
+
+
+===============================================================================
+GROUP 2: TIMING & PERFORMANCE-BASED DETECTION
+===============================================================================
+
+2.1 RDTSC (READ TIME-STAMP COUNTER)
+    - Measure instruction execution time
+    - VM exits cause timing inconsistencies
+    - Compare RDTSC before/after privileged operations
+
+2.2 RDTSCP TIMING
+    - Similar to RDTSC but includes processor ID
+    - Detect VM exits from timing delays
+    - Cross-core timing analysis
+
+2.3 SLEEP/DELAY TIMING
+    - Sleep() functions run faster/slower in VMs
+    - Compare expected vs actual sleep duration
+    - Time dilation detection
+
+2.4 INSTRUCTION TIMING
+    - Privileged instructions take longer (VM exits)
+    - SIDT, SGDT, SLDT, SMSW timing variations
+    - IN/OUT instruction delays
+
+2.5 PERFORMANCE COUNTER DISCREPANCIES
+    - Query CPU performance counters
+    - VM overhead causes unusual metrics
+    - PMC (Performance Monitoring Counter) analysis
+
+2.6 CACHE TIMING ATTACKS
+    - CPU cache behavior differs in VMs
+    - TLB (Translation Lookaside Buffer) characteristics
+    - L1/L2/L3 cache latency measurements
+
+
+===============================================================================
+GROUP 3: BIOS & FIRMWARE DETECTION
+===============================================================================
+
+3.1 SMBIOS/DMI STRING DETECTION
+    - SystemManufacturer: "innotek GmbH", "VMware, Inc.", "Microsoft Corporation"
+    - SystemProductName: "VirtualBox", "VMware Virtual Platform"
+    - BIOSVendor: "Phoenix Technologies", "American Megatrends" (specific versions)
+    - BIOSVersion: Contains "VBOX", "VMW", "QEMU"
+    - BaseBoardManufacturer: VM vendor names
+    - SerialNumber: Generic or sequential patterns
+
+3.2 ACPI TABLES
+    - ACPI table signatures contain VM identifiers
+    - Table OEM IDs reveal virtualization
+    - DSDT/SSDT table analysis
+
+3.3 SYSTEM FIRMWARE QUERIES
+    - Query firmware through WMI/UEFI
+    - Virtualization-specific firmware signatures
+
+3.4 UEFI/EFI DETECTION
+    - Query EFI variables for VM indicators
+    - Virtual firmware implementations
+    - EFI boot service characteristics
+
+
+===============================================================================
+GROUP 4: WINDOWS REGISTRY DETECTION
+===============================================================================
+
+4.1 VM GUEST ADDITIONS REGISTRY KEYS
+    HKLM\SOFTWARE\Oracle\VirtualBox Guest Additions
+    HKLM\SOFTWARE\VMware, Inc.\VMware Tools
+
+4.2 VM SERVICE REGISTRY KEYS
+    HKLM\SYSTEM\ControlSet001\Services\VBoxGuest
+    HKLM\SYSTEM\ControlSet001\Services\VBoxMouse
+    HKLM\SYSTEM\ControlSet001\Services\VBoxService
+    HKLM\SYSTEM\ControlSet001\Services\VBoxSF
+    HKLM\SYSTEM\ControlSet001\Services\VBoxVideo
+    HKLM\SYSTEM\ControlSet001\Services\vmci
+    HKLM\SYSTEM\ControlSet001\Services\vmhgfs
+    HKLM\SYSTEM\ControlSet001\Services\vmmouse
+    HKLM\SYSTEM\ControlSet001\Services\vmusb
+    HKLM\SYSTEM\ControlSet001\Services\vmusbmouse
+    HKLM\SYSTEM\ControlSet001\Services\vmvss
+    HKLM\SYSTEM\ControlSet001\Services\vmscsi
+    HKLM\SYSTEM\ControlSet001\Services\vmxnet
+
+4.3 HARDWARE DESCRIPTION REGISTRY
+    HKLM\HARDWARE\DESCRIPTION\System\SystemBiosVersion
+    HKLM\HARDWARE\DESCRIPTION\System\VideoBiosVersion
+
+4.4 NETWORK ADAPTER REGISTRY
+    Network adapter entries with VM vendor names
+
+
+===============================================================================
+GROUP 5: FILE SYSTEM & DRIVER DETECTION
+===============================================================================
+
+5.1 VM TOOL DIRECTORIES
+    C:\Program Files\VMware\VMware Tools\
+    C:\Program Files\Oracle\VirtualBox Guest Additions\
+
+5.2 VM DRIVER FILES
+    C:\Windows\System32\drivers\VBoxMouse.sys
+    C:\Windows\System32\drivers\VBoxGuest.sys
+    C:\Windows\System32\drivers\VBoxSF.sys
+    C:\Windows\System32\drivers\VBoxVideo.sys
+    C:\Windows\System32\drivers\vmhgfs.sys
+    C:\Windows\System32\drivers\vmmouse.sys
+    C:\Windows\System32\drivers\vmxnet.sys
+
+5.3 VM EXECUTABLE FILES
+    C:\Windows\System32\vboxtray.exe
+    C:\Windows\System32\VBoxService.exe
+    C:\Windows\System32\VBoxControl.exe
+    C:\Windows\System32\vmtoolsd.exe
+    C:\Windows\System32\vmacthlp.exe
+
+5.4 KERNEL DRIVER ENUMERATION
+    Query loaded kernel drivers
+    Look for VM-specific driver names
+    Driver signature verification
+
+
+===============================================================================
+GROUP 6: PROCESS & SERVICE DETECTION
+===============================================================================
+
+6.1 VM TOOL PROCESSES
+    - VBoxService.exe, VBoxTray.exe
+    - vmtoolsd.exe, vmacthlp.exe
+    - vmware-vmx.exe, vmware.exe
+    - xenservice.exe
+    - qemu-ga.exe (QEMU Guest Agent)
+
+6.2 WINDOWS SERVICES
+    - Service names containing: VBox, VMware, vm, virtual
+    - Service display names with VM vendors
+
+6.3 PROCESS PARENT-CHILD RELATIONSHIPS
+    - Unusual parent-child process relationships
+    - Orphaned processes
+
+6.4 PROCESS ENUMERATION PATTERNS
+    - Limited number of running processes
+    - Missing expected system processes
+
+
+===============================================================================
+GROUP 7: HARDWARE DEVICE DETECTION
+===============================================================================
+
+7.1 PCI DEVICE ENUMERATION
+    - Virtual graphics adapters
+    - Virtual SCSI/IDE/SATA controllers
+    - Virtual network interface cards
+    - Virtual audio devices
+    - Virtual USB controllers
+
+7.2 DEVICE DESCRIPTOR STRINGS
+    - "VirtualBox Graphics Adapter"
+    - "VMware SVGA II"
+    - "VirtIO" devices
+    - "QEMU" devices
+    - "Virtual HD"
+    - "Virtual DVD-ROM"
+
+7.3 PCI VENDOR/DEVICE IDs
+    - Known VM vendor PCI IDs
+    - Unusual or missing device IDs
+
+7.4 USB DEVICE DETECTION
+    - Virtual USB controllers
+    - Absence of typical USB devices
+    - Generic USB device IDs
+
+
+===============================================================================
+GROUP 8: NETWORK & MAC ADDRESS DETECTION
+===============================================================================
+
+8.1 MAC ADDRESS OUI PREFIXES
+    - 08:00:27:xx:xx:xx (VirtualBox)
+    - 00:05:69:xx:xx:xx (VMware)
+    - 00:0C:29:xx:xx:xx (VMware)
+    - 00:1C:14:xx:xx:xx (VMware)
+    - 00:50:56:xx:xx:xx (VMware)
+
+8.2 NETWORK ADAPTER NAMES
+    - Adapter descriptions contain "Virtual", "VMware", "VBox"
+    - Virtual NIC model names
+
+8.3 NETWORK CONFIGURATION
+    - Default VM network configurations
+    - NAT/bridged adapter fingerprints
+    - Virtual DHCP server responses
+
+8.4 DNS & DHCP FINGERPRINTING
+    - Virtual DHCP server characteristics
+    - DNS resolution patterns
+
+
+===============================================================================
+GROUP 9: DISK & STORAGE DETECTION
+===============================================================================
+
+9.1 DISK MODEL STRINGS
+    - "VBOX HARDDISK"
+    - "VMware Virtual S"
+    - "QEMU HARDDISK"
+    - "Virtual HD"
+    - "DADY HARDDISK" (Hyper-V)
+
+9.2 DISK SERIAL NUMBERS
+    - Sequential or patterned serial numbers
+    - Generic serial formats
+
+9.3 VOLUME LABELS
+    - Labels containing VM identifiers
+    - Default volume names
+
+9.4 SCSI INQUIRY DATA
+    - Query SCSI device information
+    - Virtual controller responses differ from physical
+
+9.5 DISK SIZE ANOMALIES
+    - Exactly rounded sizes (20GB, 40GB, 60GB)
+    - Common default VM disk sizes
+
+9.6 SMART DATA
+    - Missing or unusual SMART attributes
+    - Virtual disk health information
+
+
+===============================================================================
+GROUP 10: MEMORY DETECTION
+===============================================================================
+
+10.1 MEMORY SIZE PATTERNS
+     - Common VM RAM allocations (1GB, 2GB, 4GB exactly)
+     - Unusual memory configurations
+     - Power-of-2 memory sizes
+
+10.2 MEMORY ARTIFACTS
+     - VM-specific memory structures
+     - Hypervisor memory regions
+
+10.3 MEMORY PAGE SHARING
+     - KSM (Kernel Same-page Merging) detection
+     - Transparent page sharing artifacts
+     - Memory deduplication indicators
+
+
+===============================================================================
+GROUP 11: INSTRUCTION & CPU BEHAVIOR
+===============================================================================
+
+11.1 PRIVILEGED INSTRUCTION BEHAVIOR
+     - IN, OUT to specific ports
+     - SIDT, SGDT, SLDT, SMSW behavior differences
+     - Red Pill technique (SIDT returns different values)
+
+11.2 NO-PILL TECHNIQUE
+     - Execute STR (Store Task Register)
+     - LDT location differences
+
+11.3 I/O COMMUNICATION BACKDOORS
+     - VMware: IN instruction on port 0x5658 ("VX")
+     - VirtualBox: Special I/O ports
+     - Hypervisor communication channels
+
+11.4 EXCEPTION HANDLING
+     - Different exception behavior in VMs
+     - Debug register manipulation
+     - INT instruction variations
+
+11.5 INVALID OPERATION HANDLING
+     - Response to invalid opcodes
+     - Privileged instruction traps
+
+
+===============================================================================
+GROUP 12: WMI (WINDOWS MANAGEMENT INSTRUMENTATION)
+===============================================================================
+
+12.1 WMI BIOS QUERIES
+     SELECT * FROM Win32_BIOS
+     - Manufacturer, Version, SerialNumber
+
+12.2 WMI COMPUTER SYSTEM QUERIES
+     SELECT * FROM Win32_ComputerSystem
+     - Manufacturer, Model, TotalPhysicalMemory
+
+12.3 WMI BASEBOARD QUERIES
+     SELECT * FROM Win32_BaseBoard
+     - Manufacturer, Product, SerialNumber
+
+12.4 WMI DISK DRIVE QUERIES
+     SELECT * FROM Win32_DiskDrive
+     - Model, InterfaceType, SerialNumber
+
+12.5 WMI NETWORK ADAPTER QUERIES
+     SELECT * FROM Win32_NetworkAdapter
+     - Manufacturer, Description, MACAddress
+
+12.6 WMI VIDEO CONTROLLER QUERIES
+     SELECT * FROM Win32_VideoController
+     - Name, VideoProcessor, AdapterRAM
+
+12.7 WMI PNP ENTITY QUERIES
+     SELECT * FROM Win32_PnPEntity
+     - DeviceID, Description
+
+
+===============================================================================
+GROUP 13: GPU & GRAPHICS DETECTION
+===============================================================================
+
+13.1 GRAPHICS CARD IDENTIFICATION
+     - Virtual GPU models
+     - "VMware SVGA", "VirtualBox Graphics"
+     - "QXL", "Cirrus Logic"
+
+13.2 GPU CAPABILITIES
+     - Limited GPU capabilities
+     - Missing 3D acceleration features
+     - Reduced VRAM
+
+13.3 OPENGL/DIRECTX DETECTION
+     - Renderer strings contain VM identifiers
+     - GL_VENDOR, GL_RENDERER strings
+     - DirectX adapter descriptions
+
+13.4 3D ACCELERATION TESTS
+     - Performance characteristics
+     - Feature support checks
+
+
+===============================================================================
+GROUP 14: AUDIO & MULTIMEDIA DETECTION
+===============================================================================
+
+14.1 AUDIO DEVICE NAMES
+     - Virtual audio device identifiers
+     - Generic sound card names
+
+14.2 AUDIO CAPABILITIES
+     - Limited audio features
+     - Missing hardware acceleration
+
+14.3 MULTIMEDIA DEVICE ABSENCE
+     - No webcam devices
+     - Missing multimedia controllers
+
+
+===============================================================================
+GROUP 15: SENSOR & HARDWARE MONITORING
+===============================================================================
+
+15.1 TEMPERATURE SENSORS
+     - No CPU temperature sensors
+     - Missing motherboard sensors
+
+15.2 FAN SPEED MONITORING
+     - No fan speed controls
+     - Absent cooling system data
+
+15.3 VOLTAGE SENSORS
+     - Missing voltage monitoring
+     - No power supply information
+
+15.4 ACPI THERMAL ZONES
+     - Missing or generic thermal zones
+
+
+===============================================================================
+GROUP 16: USER BEHAVIOR & ENVIRONMENTAL DETECTION
+===============================================================================
+
+16.1 USER INTERACTION PATTERNS
+     - Mouse movement analysis (too perfect/mechanical)
+     - No user activity over extended time
+     - Automated analysis patterns
+     - Lack of idle time
+
+16.2 DESKTOP ENVIRONMENT
+     - Low screen resolution (800x600, 1024x768)
+     - No desktop icons or customization
+     - Generic wallpaper
+     - Default theme
+
+16.3 FILE SYSTEM ARTIFACTS
+     - No browser history
+     - No recent documents
+     - Empty Downloads folder
+     - No temporary files
+
+16.4 SYSTEM AGE INDICATORS
+     - Recent Windows installation
+     - No Windows updates installed
+     - Fresh system with minimal usage
+     - Event log gaps
+
+
+===============================================================================
+GROUP 17: HYPERVISOR-SPECIFIC TECHNIQUES
+===============================================================================
+
+17.1 VMWARE SPECIFIC DETECTION
+     - VMware Tools installation
+     - vmware-vmx process
+     - VMware RPCI (Remote Procedure Call Interface)
+     - "VMXh" magic number
+     - Backdoor I/O port (0x5658) communication
+     - VMware registry keys
+
+17.2 VIRTUALBOX SPECIFIC DETECTION
+     - Oracle/innotek strings
+     - VBox* prefixes everywhere
+     - Guest Additions artifacts
+     - VirtualBox shared folders (\\VBOXSVR\)
+     - VBox registry entries
+
+17.3 HYPER-V SPECIFIC DETECTION
+     - "Microsoft Corporation" as manufacturer
+     - Hyper-V specific registry keys
+     - Virtual Machine Bus (VMBus)
+     - Hyper-V integration services
+
+17.4 QEMU/KVM SPECIFIC DETECTION
+     - QEMU device names
+     - Bochs BIOS (often used with QEMU)
+     - VirtIO drivers and devices
+     - "QEMU" strings in hardware
+
+17.5 XEN SPECIFIC DETECTION
+     - Xen device names
+     - PV (paravirtualization) drivers
+     - XenStore presence
+
+
+===============================================================================
+GROUP 18: ADVANCED & RESEARCH TECHNIQUES
+===============================================================================
+
+18.1 SPECULATIVE EXECUTION
+     - Spectre/Meltdown mitigations differ
+     - Branch prediction behavior
+     - Side-channel timing differences
+
+18.2 INTEL SGX DETECTION
+     - SGX availability checks
+     - Enclave behavior differences
+
+18.3 NESTED VIRTUALIZATION
+     - Detect if hypervisor is itself virtualized
+     - Multiple virtualization layers
+
+18.4 PERFORMANCE DEGRADATION
+     - CPU-intensive operations slower
+     - I/O operations degraded
+     - Memory access latency
+
+18.5 SIDE-CHANNEL ANALYSIS
+     - Power consumption patterns
+     - Electromagnetic emissions
+     - Acoustic analysis
+
+
+===============================================================================
+GROUP 19: SANDBOX & ANALYSIS TOOL DETECTION
+===============================================================================
+
+19.1 KNOWN SANDBOX ARTIFACTS
+     - Cuckoo Sandbox specific files/processes
+     - Joe Sandbox indicators
+     - Any.run characteristics
+     - Hybrid Analysis signatures
+
+19.2 ANALYSIS AGENT PROCESSES
+     - Agent.exe, analyzer.exe
+     - Monitoring tool processes
+     - Instrumentation frameworks
+
+19.3 API HOOKING DETECTION
+     - Hooked API functions
+     - Inline hooks in system DLLs
+     - IAT (Import Address Table) modifications
+
+19.4 DEBUGGING DETECTION
+     - IsDebuggerPresent API
+     - CheckRemoteDebuggerPresent
+     - NtQueryInformationProcess
+     - Debug registers (DR0-DR7)
+
+19.5 MONITORING TOOL DETECTION
+     - Process Monitor (procmon)
+     - API Monitor
+     - Wireshark/network sniffers
+
+
+===============================================================================
+GROUP 20: NETWORK & INTERNET CONNECTIVITY
+===============================================================================
+
+20.1 INTERNET CONNECTIVITY CHECKS
+     - Limited/monitored network access
+     - Fake internet responses
+     - DNS sinkholing
+
+20.2 PROXY & FILTERING DETECTION
+     - Unusual proxy configurations
+     - SSL/TLS interception
+     - Traffic manipulation
+
+20.3 GEOLOCATION ANOMALIES
+     - IP address vs system location mismatch
+     - Datacenter IP ranges
+     - VPN/proxy indicators
+
+20.4 EXTERNAL SERVICE CHECKS
+     - Cannot reach specific domains
+     - Blocked outbound connections
+
+
+===============================================================================
+GROUP 21: COMBINED & SCORING-BASED DETECTION
+===============================================================================
+
+21.1 MULTI-VECTOR SCORING
+     - Each positive detection adds points
+     - Threshold-based decision making
+
+21.2 WEIGHTED DETECTION
+     - Some indicators more reliable than others
+     - Probability calculations
+
+21.3 TIME-DELAYED CHECKS
+     - Run checks at different execution stages
+     - Monitor for changes over time
+
+21.4 REDUNDANT VERIFICATION
+     - Verify positive detections multiple ways
+     - Cross-validation of indicators
+
+21.5 HEURISTIC ANALYSIS
+     - Combine multiple weak indicators
+     - Pattern matching across categories
+
+
+===============================================================================
+GROUP 22: MICROARCHITECTURAL & CPU STATE FINGERPRINTING
+===============================================================================
+
+22.1 CPU MICROCODE VERSION MISMATCH
+    - CPUID(0x1) + MSR 0x8B (IA32_BIOS_SIGN_ID)
+    - VMs often run outdated or generic microcode revisions
+    - Mismatch with expected host microcode
+
+22.2 UNCORE PMU (PERFORMANCE MONITORING UNIT)
+    - Intel CBO, IMC, QPI/UPI counters show shared hardware patterns
+    - Event rates differ due to multi-tenant scheduling
+
+22.3 RAPL ENERGY COUNTERS
+    - MSR_PKG_ENERGY_STATUS (0x611), MSR_PP0_ENERGY_STATUS
+    - Flat or impossible power draw (e.g., 15.3W constant)
+    - No thermal throttling spikes
+
+22.4 AMD TOPOLOGY EXTENSION (CPUID 0x8000001E)
+    - Returns node ID, threads per core
+    - Mismatch with Win32_Processor.NumberOfCores/LogicalProcessors
+
+22.5 CACHE ALLOCATION TECHNOLOGY (CAT) / RDT
+    - IA32_PQR_ASSOC, IA32_L3_MASK_n
+    - VMs restricted to specific cache ways
+    - Detects Intel RDT or VMware cache partitioning
+
+
+===============================================================================
+GROUP 23: VIRTUALIZATION EXTENSION BEHAVIOR
+===============================================================================
+
+23.1 VMX PREEMPTION TIMER INCONSISTENCY
+    - Intel VMX: VMX-preemption timer decrements at host rate
+    - Nested VMs show delayed or absent countdown
+
+23.2 EPT VIOLATION TIMING
+    - Measure time from EPT fault to handler
+    - Nested or monitored VMs show increased latency
+
+23.3 VMCALL / VMMCALL HYPERCALL FINGERPRINTING
+    - Execute VMCALL with no-op payload
+    - Check for timing, register corruption, or VM exit
+
+23.4 VMCS SHADOWING ARTIFACTS
+     - Nested virtualization leaves VMCS shadow indicators
+     - Debug register or MSR leakage
+
+
+===============================================================================
+GROUP 24: MODERN & CONFIDENTIAL VM DETECTION
+===============================================================================
+
+24.1 INTEL TDX (TRUST DOMAIN EXTENSIONS)
+    - CPUID(0x80000001):EDX[28] = 1 → TDX capable
+    - CPUID(0x40000010) → TDX vendor leaf
+    - TDVMCALL hypercall support
+
+24.2 AMD SEV / SEV-ES / SEV-SNP
+    - CPUID(0x8000001F):EAX[1] = SEV, [2] = SEV-ES, [3] = SNP
+    - MSR 0xC001_0131 (SEV_STATUS)
+
+24.3 ARM VIRTUALIZATION DETECTION
+    - ID_AA64PFR0_EL1[12] = virtualization support
+    - HCR_EL2 traps differ in guest vs host
+
+24.4 APPLE SILICON (M1/M2/M3) VM DETECTION
+    - sysctl hw.optional.* missing (e.g., advx, aes)
+    - mach_absolute_time() shows TSC-like drift
+    - No Apple SMC keys or thermal sensors
+
+24.5 WSL2 (WINDOWS SUBSYSTEM FOR LINUX) DETECTION
+    - /proc/cpuinfo: "Microsoft"
+    - dmesg | grep -i wsl
+    - uname -r ends in "-microsoft-standard-WSL2"
+
+
+===============================================================================
+GROUP 25: CONTAINER & LIGHTWEIGHT ISOLATION DETECTION
+===============================================================================
+
+25.1 CGROUP FINGERPRINTS
+    - /proc/1/cgroup contains: docker, lxc, kubepods, systemd-nspawn
+
+25.2 FILESYSTEM OVERLAYS
+    - /proc/mounts: overlay, overlay2, aufs, fuse.overlayfs
+
+25.3 DOCKER / PODMAN ARTIFACTS
+    - /.dockerenv file
+    - /run/.containerenv
+    - Environment variables: CONTAINER=, PODMAN=
+
+25.4 SYSTEMD-NSPAWN DETECTION
+    - Environment: SYSTEMD_NSPAWN_CONTAINER=1
+    - /run/host/container-manager
+
+
+===============================================================================
+GROUP 26: CLOUD & HYPERSCALER FINGERPRINTS
+===============================================================================
+
+26.1 AWS NITRO / EC2
+    - DMI: "Amazon EC2", "AWS"
+    - MAC OUI: 02:5e:xx:xx:xx:xx
+    - CPU: "AWS Graviton", "Intel Xeon" + serial "Amazon EC2"
+
+26.2 MICROSOFT AZURE
+    - ChassisAssetTag: 7783-7084-3265-9085-...
+    - Hyper-V + "Microsoft Corporation"
+    - VMBus devices present
+
+26.3 GOOGLE CLOUD PLATFORM (GCP)
+    - BIOS: "Google", "Google Compute Engine"
+    - Serial: "GoogleCloud"
+    - CPU model: "Intel Skylake" + GCP metadata
+
+26.4 ORACLE CLOUD
+    - SystemProductName: "VM.Standard.E5.Flex"
+    - BIOS: "Oracle Corporation"
+
+
+===============================================================================
+GROUP 27: ADVANCED ANTI-DEBUG & ANTI-ANALYSIS
+===============================================================================
+
+27.1 VEH / SEH FRAME WALKING
+    - Stack walk reveals hooks from monitoring tools
+    - Unexpected exception handler addresses
+
+27.2 TLS CALLBACK EXECUTION TIMING
+    - TLS callbacks run before main()
+    - Delay analysis start to evade early hooks
+
+27.3 FIBER LOCAL STORAGE (FLS) HOOKING
+    - Advanced sandboxes hook FlsCallback
+    - Detect via FlsAlloc/FlsSetValue
+
+27.4 HEAVEN'S GATE (WOW64 TRANSITION)
+    - 32-bit code executes syscall via far jump to 64-bit
+    - Fails or behaves differently in emulated environments
+
+
+===============================================================================
+GROUP 28: HIGH-RESOLUTION TIME & ENTROPY SOURCES
+===============================================================================
+
+28.1 QUERY PERFORMANCE COUNTER (QPC) DRIFT
+    - QPC based on HPET vs TSC
+    - VMs show drift under CPU load
+
+28.2 GETTICKCOUNT64() SKEW
+    - Compare with RDTSC
+    - Non-monotonic jumps in VMs
+
+28.3 SYSTEM FIRMWARE TABLE QUERY
+    - EnumSystemFirmwareTables('ACPI') returns incomplete data
+    - Missing RAW SMBIOS in VMs
+
+
+===============================================================================
+GROUP 29: HUMAN BEHAVIORAL HEURISTICS
+===============================================================================
+
+29.1 CURSOR ACCELERATION CURVE
+    - VMs apply synthetic acceleration
+    - Real mice show natural variance in delta
+
+29.2 KEYBOARD TYPING DELAY DISTRIBUTION
+    - Human: log-normal inter-keystroke
+    - Bot: uniform or fixed delays
+
+29.3 WINDOW MANAGER ARTIFACTS
+    - No DWM composition, Aero, taskbar blur
+    - Default theme, no user customization
+
+29.4 EVENT LOG GAPS
+    - No user logon events
+    - No Windows Update history
+    - Event ID 4624 missing
+
+
+===============================================================================
+GROUP 30: STEALTH & ANTI-ANTI-VM COUNTERMEASURES
+===============================================================================
+
+30.1 HYPERVISOR PATCHING
+    - Modify CPUID bit 31, SMBIOS in RAM
+    - Patch VMX timer, EPT handlers
+
+30.2 NESTED VIRTUALIZATION
+    - Run VM-inside-VM to mask inner artifacts
+    - Outer VM hides CPUID, inner runs payload
+
+30.3 CUSTOM HYPERVISOR
+    - Use Hyper-V Enlightenment, KVM custom modules
+    - Minimal hypervisor with no guest tools
+
+30.4 BARE-METAL DROPPERS
+    - Initial payload checks environment
+    - Drops final stage only on real hardware
+
+
+===============================================================================
+GROUP 31: GPU-SPECIFIC ADVANCED CHECKS
+===============================================================================
+
+31.1 VULKAN/METAL API FINGERPRINTING
+     - Query device UUIDs, driver versions, and vendor-specific extensions
+     - Virtual GPUs return synthetic or duplicated UUIDs
+     - Missing Vulkan extensions (e.g., VK_KHR_portability_subset on Metal)
+
+31.2 GPU MEMORY CLOCK BEHAVIOR
+     - Virtual GPUs often have static memory clocks
+     - No dynamic clock scaling under load
+     - Query via Vulkan/Metal/DirectX APIs
+
+31.3 SHADER COMPILATION TIMING
+     - VMs show different compilation patterns
+     - Consistent timing regardless of shader complexity
+     - Measure glCompileShader or equivalent
+
+31.4 GPU CONTEXT SWITCHING OVERHEAD
+     - Measure context creation/destruction timing
+     - Virtual GPUs show higher overhead
+     - Multi-context benchmark patterns
+
+
+===============================================================================
+GROUP 32: STORAGE & I/O PATTERN ANALYSIS
+===============================================================================
+
+32.1 NVME IDENTIFY CONTROLLER DATA
+     - Virtual NVMe controllers return generic firmware versions
+     - Missing serial number patterns
+     - Query via NVME_ADMIN_IDENTIFY IOCTL
+
+32.2 DISK WEAR LEVELING ABSENCE
+     - SSDs show wear patterns; virtual disks don't
+     - SMART attribute 177 (Wear_Leveling_Count) static
+     - No erase count progression
+
+32.3 I/O SCHEDULER FINGERPRINTING
+     - Check /sys/block/*/queue/scheduler on Linux
+     - Virtual environments use simpler schedulers
+     - Missing advanced options (bfq, kyber)
+
+32.4 TRIM/DISCARD COMMAND BEHAVIOR
+     - Virtual disks handle TRIM differently
+     - No actual space reclamation
+     - Measure performance impact of discard operations
+
+
+===============================================================================
+GROUP 33: PLATFORM-SPECIFIC DETECTION
+===============================================================================
+
+33.1 CHROMEOS/CROSTINI DETECTION
+     - /dev/vsock presence
+     - systemd-detect-virt returns "lxc"
+     - Containerized ChromeOS environment indicators
+
+33.2 ANDROID EMULATOR DETECTION
+     - Goldfish drivers (goldfish_pipe, goldfish_battery)
+     - /sys/qemu_trace presence
+     - Build fingerprints contain "sdk_gphone", "emulator"
+     - Sensor data shows perfect values
+
+33.3 RISC-V VIRTUALIZATION
+     - H-extension detection via CSR registers
+     - Read satp, hgatp registers
+     - Hypervisor mode indicators
+
+
+===============================================================================
+GROUP 34: NETWORK BEHAVIOR ANALYSIS
+===============================================================================
+
+34.1 TCP/IP STACK FINGERPRINTING
+     - Window scaling, initial TTL, TCP timestamps differ in VMs
+     - Consistent SYN-ACK timing
+     - Missing OS-specific quirks
+
+34.2 NETWORK LATENCY FLOOR
+     - VMs have minimum ~0.1ms internal latency vs ~0.001ms on bare metal
+     - Loopback interface timing
+     - Inter-VM communication patterns
+
+34.3 PACKET LOSS PATTERNS
+     - Virtual NICs rarely drop packets
+     - No retransmission storms
+     - Perfect packet delivery under load
+
+34.4 ARP TABLE CHARACTERISTICS
+     - Limited gateway MAC diversity in NAT mode
+     - Single MAC for all hosts
+     - Static ARP cache entries
+
+
+===============================================================================
+GROUP 35: FIRMWARE & BOOT PROCESS
+===============================================================================
+
+35.1 SECURE BOOT CONFIGURATION
+     - VMs often have Secure Boot disabled or use generic keys
+     - Missing Microsoft-signed keys
+     - Query EFI_SECURE_BOOT variable
+
+35.2 TPM VERSION INCONSISTENCIES
+     - vTPM 2.0 behavior differs from physical TPM
+     - Missing endorsement key hierarchy
+     - TPM2_GetCapability returns virtual indicators
+
+35.3 UEFI BOOT ORDER
+     - Virtual machines often have simplified boot configurations
+     - Single boot entry
+     - No complex boot manager
+
+35.4 ACPI _OSI QUERIES
+     - Response to operating system interface queries
+     - Virtual firmware returns different _OSI strings
+     - Missing Windows-specific interfaces
+
+
+===============================================================================
+GROUP 36: PERIPHERAL DEVICE ABSENCE
+===============================================================================
+
+36.1 BLUETOOTH ADAPTER MISSING
+     - Nearly all modern systems have Bluetooth
+     - Win32_PnPEntity query shows no Bluetooth radio
+     - Missing BTH* devices
+
+36.2 BATTERY/ACPI POWER SOURCE
+     - Laptops always have battery info; VMs don't
+     - Win32_Battery returns no instances
+     - ACPI _BIF/_BST methods missing
+
+36.3 AMBIENT LIGHT SENSORS
+     - Modern laptops have these; VMs never do
+     - No ALS device in device manager
+     - Missing sensor collection
+
+36.4 ACCELEROMETER/GYROSCOPE
+     - Present in most modern devices, absent in VMs
+     - No sensor API responses
+     - Missing IMU hardware
+
+36.5 FINGERPRINT READERS/BIOMETRIC DEVICES
+     - Common in modern laptops
+     - No biometric service
+     - Missing WBDI drivers
+
+
+===============================================================================
+GROUP 37: MODERN WINDOWS-SPECIFIC
+===============================================================================
+
+37.1 WINDOWS SANDBOX DETECTION
+     - Specific registry keys (HKLM\SYSTEM\CurrentControlSet\Control\WindowsSandbox)
+     - UtcDiagTrack service behavior
+     - Container isolation indicators
+
+37.2 CREDENTIAL GUARD/VBS DETECTION
+     - Check if running in VSM (Virtual Secure Mode)
+     - Query LSA ISO policies
+     - HVCI status via GetSystemInfo
+
+37.3 HVCI (HYPERVISOR-ENFORCED CODE INTEGRITY)
+     - Query device guard status
+     - Check for HVCI enabled
+     - Kernel driver signing enforcement
+
+
+===============================================================================
+GROUP 38: KERNEL/SYSTEM CALL BEHAVIOR
+===============================================================================
+
+38.1 SYSCALL LATENCY MEASUREMENT
+     - VMs show increased syscall overhead
+     - Measure Nt* function timing
+     - Consistent delay patterns
+
+38.2 CONTEXT SWITCH TIMING
+     - Thread context switches slower in VMs
+     - Measure SwitchToThread overhead
+     - Multi-threaded benchmark patterns
+
+38.3 INTERRUPT HANDLING DELAYS
+     - Virtual interrupt controllers add latency
+     - Measure interrupt-to-handler time
+     - APIC vs virtual APIC differences
+
+38.4 PROCESS/THREAD CREATION OVERHEAD
+     - fork()/CreateProcess timing
+     - Higher overhead in virtual environments
+     - Consistent creation delays
+
+
+===============================================================================
+GROUP 39: BROWSER/JAVASCRIPT-BASED DETECTION
+===============================================================================
+
+39.1 WEBGL RENDERER STRINGS
+     - gl.getParameter(gl.RENDERER)
+     - Virtual GPU identifiers
+     - Software rendering fallbacks
+
+39.2 CANVAS FINGERPRINTING ARTIFACTS
+     - Rendering differences in virtualized GPUs
+     - Consistent pixel output
+     - Missing anti-aliasing variations
+
+39.3 WEBRTC LOCAL IP ENUMERATION
+     - Virtual network adapter IPs
+     - 10.0.2.0/24, 192.168.56.0/24 ranges
+     - NAT interface exposure
+
+39.4 BATTERY API
+     - Always returns "no battery" in VMs
+     - navigator.getBattery() promise rejection
+     - charging: false, level: 1.0
+
+39.5 NAVIGATOR.HARDWARECONCURRENCY
+     - Often shows suspicious round numbers
+     - 1, 2, 4, 8 cores exactly
+     - No odd core counts
+
+
+===============================================================================
+GROUP 40: FILE SYSTEM METADATA
+===============================================================================
+
+40.1 CREATION TIMESTAMP ANOMALIES
+     - All files created around same time
+     - Fresh VM snapshot patterns
+     - No gradual file aging
+
+40.2 INODE PATTERNS ON LINUX
+     - Sequential inodes suggest fresh filesystem
+     - Low inode numbers
+     - Missing fragmentation
+
+40.3 NTFS USN JOURNAL
+     - Limited update sequence number history
+     - Recent USN values only
+     - No long-term change journal
+
+40.4 FILE ACCESS TIME PATTERNS
+     - No gradual aging of system files
+     - All files show recent access
+     - Missing usage patterns
+
+
+===============================================================================
+GROUP 41: HYPERVISOR MEMORY FORENSICS & HYPERCALL TRACING
+===============================================================================
+
+41.1 HYPERVISOR MEMORY SCANNING
+     - Scan physical memory for VMCS, VMCB, or HV structures
+     - Look for "Microsoft Hv", "KVMKVMKVM", "VMware" in RAM
+     - Use /dev/mem or kernel drivers
+
+41.2 HYPERCALL TRAP ANALYSIS
+     - Hook VMCALL/VMEXIT handlers
+     - Count hypercall frequency under load
+     - VMs show bursty exit patterns
+
+41.3 VMEXIT REASON STATISTICS
+     - Intel VMX: VMREAD of EXIT_REASON
+     - High frequency of EPT violations, CR access, etc.
+
+41.4 HYPERVISOR PAGE TABLE WALK
+     - Walk EPT/NPT tables
+     - Detect split or shadow page tables
+
+
+===============================================================================
+GROUP 42: VIRTUAL MACHINE GUEST AGENT COMMUNICATION
+===============================================================================
+
+42.1 GUEST-HOST CHANNEL MONITORING
+     - VMware: VMCI socket (vsock)
+     - VirtualBox: HGCM (Host-Guest Comm Manager)
+     - Hyper-V: VMBus integration channels
+
+42.2 SHARED FOLDER MOUNTS
+     - \\VBOXSVR\, \\VMware\, hgfs mounts
+     - File access latency to shared folders
+
+42.3 CLIPBOARD / DRAG-DROP SYNC
+     - Shared clipboard with host
+     - Auto-sync behavior
+
+
+===============================================================================
+GROUP 43: VIRTUALIZATION-AWARE MALWARE BEHAVIOR
+===============================================================================
+
+43.1 VM-AWARE SLEEP SKIPPING
+     - Malware detects VM, skips sleep/delay loops
+     - Use RDTSC to measure actual elapsed time
+
+43.2 FAKE USER INPUT INJECTION
+     - Synthetic mouse/keyboard events
+     - No hardware HID devices
+
+43.3 SCREEN CAPTURE ARTIFACTS
+     - Identical pixels across frames
+     - No display noise or dithering
+
+
+===============================================================================
+GROUP 44: LINUX-SPECIFIC KERNEL DETECTION
+===============================================================================
+
+44.1 /proc/sched_debug
+     - Shows "kvm" or "qemu" in CPU runqueue
+     - Domain ID in Xen
+
+44.2 dmesg HYPERVISOR MESSAGES
+     - "Booting paravirtualized kernel on KVM"
+     - "Xen: HVM guest"
+
+44.3 /sys/hypervisor/
+     - /sys/hypervisor/type = "xen", "kvm"
+     - /sys/hypervisor/uuid
+
+44.4 KVM CLOCKSOURCE
+     - cat /sys/devices/system/clocksource/clocksource0/available_clocksource
+     - "kvm-clock" present
+
+
+===============================================================================
+GROUP 45: MACOS / APPLE SILICON VM DETECTION
+===============================================================================
+
+45.1 IORegistryExplorer
+     - IOProviderClass = "AppleVXD375" (Parallels)
+     - "VBoxDevice" in IOService
+
+45.2 kextstat LOADED KERNEL EXTENSIONS
+     - com.parallels, com.vmware, org.virtualbox
+
+45.3 sysctl vm.*
+     - vm.shared_region_trace_level = 0 in VMs
+     - vm.max_parallel_io_threads limited
+
+45.4 launchd PLIST OVERRIDES
+     - /Library/LaunchDaemons/com.vmware.*
+     - /Library/LaunchAgents/com.oracle.*
+
+
+===============================================================================
+GROUP 46: HARDWARE SECURITY MODULE (HSM) & TPM ARTIFACTS
+===============================================================================
+
+46.1 TPM EVENT LOG
+     - TCG PCR values static or zeroed
+     - Missing measured boot events
+
+46.2 INTEL ME / AMD PSP DETECTION
+     - Missing or emulated firmware interfaces
+     - No JTAG or SPI flash access
+
+46.3 SECURE BOOT DBX CHECKS
+     - Blacklist contains VM-signed keys
+     - No physical revocation updates
+
+
+===============================================================================
+GROUP 47: EMULATION vs VIRTUALIZATION vs CONTAINER
+===============================================================================
+
+47.1 EMULATOR DETECTION (QEMU -cpu qemu64)
+     - CPUID returns "QEMU Virtual CPU"
+     - Missing modern instructions despite model
+
+47.2 FULL SYSTEM EMULATION
+     - Bochs, QEMU TCG mode
+     - Extremely slow instruction execution
+
+47.3 CONTAINER vs VM vs BARE
+     - PID 1 namespace vs full init
+     - /proc/1/exe → systemd vs bash
+
+
+===============================================================================
+GROUP 48: AI / BEHAVIORAL ANOMALY DETECTION
+===============================================================================
+
+48.1 ML-BASED FINGERPRINTING
+     - Train on CPU, disk, network telemetry
+     - Anomalous entropy, timing, I/O patterns
+
+48.2 SYSTEM CALL SEQUENCE ANALYSIS
+     - N-gram modeling of syscalls
+     - VMs show repetitive analyst patterns
+
+48.3 FILE ACCESS ENTROPY
+     - High entropy in accessed paths = automation
+     - Low entropy = human
+
+
+===============================================================================
+GROUP 49: QUANTUM & FUTURE TECH DETECTION
+===============================================================================
+
+49.1 QUANTUM SIMULATOR DETECTION
+     - Qiskit, Cirq, IBM Q emulators
+     - Fake qubit coherence times
+
+49.2 CONFIDENTIAL COMPUTING ARTIFACTS
+     - TDX Quote vs real attestation
+     - SEV-SNP attestation report forgery
+
+49.3 HOMOMORPHIC ENCRYPTION OVERHEAD
+     - Extreme slowdown in FHE libraries
+     - Only seen in sandboxed analysis
+
+
+===============================================================================
+                            DETECTION DIFFICULTY
+===============================================================================
+
+EASY TO HIDE:
+- SMBIOS/DMI strings
+- Registry keys
+- Files and directories
+- MAC addresses
+- Disk model strings
+- Process names
+- Container environment variables
+- Browser fingerprinting artifacts
+- WebGL renderer strings
+- Environment variables
+- Shared folder mounts
+- Clipboard sync
+
+MEDIUM DIFFICULTY:
+- PCI device IDs
+- Network adapter configuration
+- Guest additions/tools
+- Service names
+- WMI queries
+- Cloud provider metadata
+- NVMe controller data
+- TPM behavior
+- UEFI boot configuration
+- Kernel extensions (kexts)
+- VMCI/vsock channels
+
+HARD TO HIDE:
+- CPUID hypervisor bit
+- Temperature sensors
+- USB device patterns
+- Firmware interfaces
+- Memory page sharing
+- MSR-based microcode/RAPL
+- TDX/SEV CPUID leaves
+- Battery/power source information
+- Sensor hardware absence
+- Bluetooth adapter
+- Syscall latency patterns
+- Hypercall frequency
+- EPT/NPT table structure
+
+VERY HARD TO HIDE:
+- Timing (RDTSC/RDTSCP/QPC)
+- Cache timing attacks
+- Instruction behavior
+- Performance characteristics
+- Side-channel analysis
+- Speculative execution differences
+- VMX/EPT timing
+- Human input entropy
+- Network latency floor
+- TCP/IP stack fingerprints
+- GPU context switching
+- I/O scheduler behavior
+- VMEXIT reason bursts
+- ML behavioral entropy
+
+
+===============================================================================
+                              IMPORTANT NOTES
+===============================================================================
+
+1. Sophisticated malware uses MULTIPLE detection techniques simultaneously
+2. No single detection method is 100% reliable
+3. Combinations of techniques increase detection confidence
+4. Some techniques cannot be hidden without hypervisor source modifications
+5. Bare-metal analysis remains the most reliable for advanced malware
+6. Detection techniques constantly evolve as anti-detection improves
+7. Confidential VMs (TDX/SEV) hide traditional hypervisor but expose new CPUID
+8. Containers and WSL2 are increasingly used as analysis environments
+9. Cloud VMs dominate modern malware sandboxes
+10. ARM and Apple Silicon require platform-specific techniques
+11. Browser-based detection increasingly common in web malware
+12. Mobile and ARM platforms require specialized techniques
+13. Peripheral device absence highly reliable for laptop VMs
+14. Network stack fingerprinting works across OS boundaries
+15. File system metadata reveals snapshot/restore usage
+16. GPU virtualization still maturing; many artifacts remain
+17. Modern Windows isolation features create new detection vectors
+18. Combined peripheral + behavior analysis approaches 99% accuracy
+19. Hypervisor memory forensics bypasses most stealth techniques
+20. Behavioral ML models detect automation even in hardened VMs
+
+===============================================================================
+                                END OF CATALOG
+===============================================================================
