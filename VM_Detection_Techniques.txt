@@ -29,7 +29,6 @@ GROUP 1: CPU & PROCESSOR-BASED DETECTION
     - Generic CPU models used by hypervisors
     - Mismatched CPU branding strings
 
-
 ===============================================================================
 GROUP 2: TIMING & PERFORMANCE-BASED DETECTION
 ===============================================================================
@@ -64,7 +63,6 @@ GROUP 2: TIMING & PERFORMANCE-BASED DETECTION
     - TLB (Translation Lookaside Buffer) characteristics
     - L1/L2/L3 cache latency measurements
 
-
 ===============================================================================
 GROUP 3: BIOS & FIRMWARE DETECTION
 ===============================================================================
@@ -90,7 +88,6 @@ GROUP 3: BIOS & FIRMWARE DETECTION
     - Query EFI variables for VM indicators
     - Virtual firmware implementations
     - EFI boot service characteristics
-
 
 ===============================================================================
 GROUP 4: WINDOWS REGISTRY DETECTION
@@ -122,7 +119,6 @@ GROUP 4: WINDOWS REGISTRY DETECTION
 4.4 NETWORK ADAPTER REGISTRY
     Network adapter entries with VM vendor names
 
-
 ===============================================================================
 GROUP 5: FILE SYSTEM & DRIVER DETECTION
 ===============================================================================
@@ -152,7 +148,6 @@ GROUP 5: FILE SYSTEM & DRIVER DETECTION
     Look for VM-specific driver names
     Driver signature verification
 
-
 ===============================================================================
 GROUP 6: PROCESS & SERVICE DETECTION
 ===============================================================================
@@ -175,7 +170,6 @@ GROUP 6: PROCESS & SERVICE DETECTION
 6.4 PROCESS ENUMERATION PATTERNS
     - Limited number of running processes
     - Missing expected system processes
-
 
 ===============================================================================
 GROUP 7: HARDWARE DEVICE DETECTION
@@ -205,7 +199,6 @@ GROUP 7: HARDWARE DEVICE DETECTION
     - Absence of typical USB devices
     - Generic USB device IDs
 
-
 ===============================================================================
 GROUP 8: NETWORK & MAC ADDRESS DETECTION
 ===============================================================================
@@ -229,7 +222,6 @@ GROUP 8: NETWORK & MAC ADDRESS DETECTION
 8.4 DNS & DHCP FINGERPRINTING
     - Virtual DHCP server characteristics
     - DNS resolution patterns
-
 
 ===============================================================================
 GROUP 9: DISK & STORAGE DETECTION
@@ -262,7 +254,6 @@ GROUP 9: DISK & STORAGE DETECTION
     - Missing or unusual SMART attributes
     - Virtual disk health information
 
-
 ===============================================================================
 GROUP 10: MEMORY DETECTION
 ===============================================================================
@@ -280,7 +271,6 @@ GROUP 10: MEMORY DETECTION
      - KSM (Kernel Same-page Merging) detection
      - Transparent page sharing artifacts
      - Memory deduplication indicators
-
 
 ===============================================================================
 GROUP 11: INSTRUCTION & CPU BEHAVIOR
@@ -308,7 +298,6 @@ GROUP 11: INSTRUCTION & CPU BEHAVIOR
 11.5 INVALID OPERATION HANDLING
      - Response to invalid opcodes
      - Privileged instruction traps
-
 
 ===============================================================================
 GROUP 12: WMI (WINDOWS MANAGEMENT INSTRUMENTATION)
@@ -342,7 +331,6 @@ GROUP 12: WMI (WINDOWS MANAGEMENT INSTRUMENTATION)
      SELECT * FROM Win32_PnPEntity
      - DeviceID, Description
 
-
 ===============================================================================
 GROUP 13: GPU & GRAPHICS DETECTION
 ===============================================================================
@@ -366,7 +354,6 @@ GROUP 13: GPU & GRAPHICS DETECTION
      - Performance characteristics
      - Feature support checks
 
-
 ===============================================================================
 GROUP 14: AUDIO & MULTIMEDIA DETECTION
 ===============================================================================
@@ -382,7 +369,6 @@ GROUP 14: AUDIO & MULTIMEDIA DETECTION
 14.3 MULTIMEDIA DEVICE ABSENCE
      - No webcam devices
      - Missing multimedia controllers
-
 
 ===============================================================================
 GROUP 15: SENSOR & HARDWARE MONITORING
@@ -402,7 +388,6 @@ GROUP 15: SENSOR & HARDWARE MONITORING
 
 15.4 ACPI THERMAL ZONES
      - Missing or generic thermal zones
-
 
 ===============================================================================
 GROUP 16: USER BEHAVIOR & ENVIRONMENTAL DETECTION
@@ -431,7 +416,6 @@ GROUP 16: USER BEHAVIOR & ENVIRONMENTAL DETECTION
      - No Windows updates installed
      - Fresh system with minimal usage
      - Event log gaps
-
 
 ===============================================================================
 GROUP 17: HYPERVISOR-SPECIFIC TECHNIQUES
@@ -469,7 +453,6 @@ GROUP 17: HYPERVISOR-SPECIFIC TECHNIQUES
      - PV (paravirtualization) drivers
      - XenStore presence
 
-
 ===============================================================================
 GROUP 18: ADVANCED & RESEARCH TECHNIQUES
 ===============================================================================
@@ -496,7 +479,6 @@ GROUP 18: ADVANCED & RESEARCH TECHNIQUES
      - Power consumption patterns
      - Electromagnetic emissions
      - Acoustic analysis
-
 
 ===============================================================================
 GROUP 19: SANDBOX & ANALYSIS TOOL DETECTION
@@ -529,7 +511,6 @@ GROUP 19: SANDBOX & ANALYSIS TOOL DETECTION
      - API Monitor
      - Wireshark/network sniffers
 
-
 ===============================================================================
 GROUP 20: NETWORK & INTERNET CONNECTIVITY
 ===============================================================================
@@ -552,7 +533,6 @@ GROUP 20: NETWORK & INTERNET CONNECTIVITY
 20.4 EXTERNAL SERVICE CHECKS
      - Cannot reach specific domains
      - Blocked outbound connections
-
 
 ===============================================================================
 GROUP 21: COMBINED & SCORING-BASED DETECTION
@@ -577,7 +557,6 @@ GROUP 21: COMBINED & SCORING-BASED DETECTION
 21.5 HEURISTIC ANALYSIS
      - Combine multiple weak indicators
      - Pattern matching across categories
-
 
 ===============================================================================
 GROUP 22: MICROARCHITECTURAL & CPU STATE FINGERPRINTING
@@ -606,7 +585,6 @@ GROUP 22: MICROARCHITECTURAL & CPU STATE FINGERPRINTING
     - VMs restricted to specific cache ways
     - Detects Intel RDT or VMware cache partitioning
 
-
 ===============================================================================
 GROUP 23: VIRTUALIZATION EXTENSION BEHAVIOR
 ===============================================================================
@@ -626,7 +604,6 @@ GROUP 23: VIRTUALIZATION EXTENSION BEHAVIOR
 23.4 VMCS SHADOWING ARTIFACTS
      - Nested virtualization leaves VMCS shadow indicators
      - Debug register or MSR leakage
-
 
 ===============================================================================
 GROUP 24: MODERN & CONFIDENTIAL VM DETECTION
@@ -655,7 +632,6 @@ GROUP 24: MODERN & CONFIDENTIAL VM DETECTION
     - dmesg | grep -i wsl
     - uname -r ends in "-microsoft-standard-WSL2"
 
-
 ===============================================================================
 GROUP 25: CONTAINER & LIGHTWEIGHT ISOLATION DETECTION
 ===============================================================================
@@ -674,7 +650,6 @@ GROUP 25: CONTAINER & LIGHTWEIGHT ISOLATION DETECTION
 25.4 SYSTEMD-NSPAWN DETECTION
     - Environment: SYSTEMD_NSPAWN_CONTAINER=1
     - /run/host/container-manager
-
 
 ===============================================================================
 GROUP 26: CLOUD & HYPERSCALER FINGERPRINTS
@@ -699,7 +674,6 @@ GROUP 26: CLOUD & HYPERSCALER FINGERPRINTS
     - SystemProductName: "VM.Standard.E5.Flex"
     - BIOS: "Oracle Corporation"
 
-
 ===============================================================================
 GROUP 27: ADVANCED ANTI-DEBUG & ANTI-ANALYSIS
 ===============================================================================
@@ -720,7 +694,6 @@ GROUP 27: ADVANCED ANTI-DEBUG & ANTI-ANALYSIS
     - 32-bit code executes syscall via far jump to 64-bit
     - Fails or behaves differently in emulated environments
 
-
 ===============================================================================
 GROUP 28: HIGH-RESOLUTION TIME & ENTROPY SOURCES
 ===============================================================================
@@ -736,7 +709,6 @@ GROUP 28: HIGH-RESOLUTION TIME & ENTROPY SOURCES
 28.3 SYSTEM FIRMWARE TABLE QUERY
     - EnumSystemFirmwareTables('ACPI') returns incomplete data
     - Missing RAW SMBIOS in VMs
-
 
 ===============================================================================
 GROUP 29: HUMAN BEHAVIORAL HEURISTICS
@@ -759,7 +731,6 @@ GROUP 29: HUMAN BEHAVIORAL HEURISTICS
     - No Windows Update history
     - Event ID 4624 missing
 
-
 ===============================================================================
 GROUP 30: STEALTH & ANTI-ANTI-VM COUNTERMEASURES
 ===============================================================================
@@ -779,7 +750,6 @@ GROUP 30: STEALTH & ANTI-ANTI-VM COUNTERMEASURES
 30.4 BARE-METAL DROPPERS
     - Initial payload checks environment
     - Drops final stage only on real hardware
-
 
 ===============================================================================
 GROUP 31: GPU-SPECIFIC ADVANCED CHECKS
@@ -805,7 +775,6 @@ GROUP 31: GPU-SPECIFIC ADVANCED CHECKS
      - Virtual GPUs show higher overhead
      - Multi-context benchmark patterns
 
-
 ===============================================================================
 GROUP 32: STORAGE & I/O PATTERN ANALYSIS
 ===============================================================================
@@ -830,7 +799,6 @@ GROUP 32: STORAGE & I/O PATTERN ANALYSIS
      - No actual space reclamation
      - Measure performance impact of discard operations
 
-
 ===============================================================================
 GROUP 33: PLATFORM-SPECIFIC DETECTION
 ===============================================================================
@@ -850,7 +818,6 @@ GROUP 33: PLATFORM-SPECIFIC DETECTION
      - H-extension detection via CSR registers
      - Read satp, hgatp registers
      - Hypervisor mode indicators
-
 
 ===============================================================================
 GROUP 34: NETWORK BEHAVIOR ANALYSIS
@@ -876,7 +843,6 @@ GROUP 34: NETWORK BEHAVIOR ANALYSIS
      - Single MAC for all hosts
      - Static ARP cache entries
 
-
 ===============================================================================
 GROUP 35: FIRMWARE & BOOT PROCESS
 ===============================================================================
@@ -900,7 +866,6 @@ GROUP 35: FIRMWARE & BOOT PROCESS
      - Response to operating system interface queries
      - Virtual firmware returns different _OSI strings
      - Missing Windows-specific interfaces
-
 
 ===============================================================================
 GROUP 36: PERIPHERAL DEVICE ABSENCE
@@ -931,7 +896,6 @@ GROUP 36: PERIPHERAL DEVICE ABSENCE
      - No biometric service
      - Missing WBDI drivers
 
-
 ===============================================================================
 GROUP 37: MODERN WINDOWS-SPECIFIC
 ===============================================================================
@@ -950,7 +914,6 @@ GROUP 37: MODERN WINDOWS-SPECIFIC
      - Query device guard status
      - Check for HVCI enabled
      - Kernel driver signing enforcement
-
 
 ===============================================================================
 GROUP 38: KERNEL/SYSTEM CALL BEHAVIOR
@@ -975,7 +938,6 @@ GROUP 38: KERNEL/SYSTEM CALL BEHAVIOR
      - fork()/CreateProcess timing
      - Higher overhead in virtual environments
      - Consistent creation delays
-
 
 ===============================================================================
 GROUP 39: BROWSER/JAVASCRIPT-BASED DETECTION
@@ -1006,7 +968,6 @@ GROUP 39: BROWSER/JAVASCRIPT-BASED DETECTION
      - 1, 2, 4, 8 cores exactly
      - No odd core counts
 
-
 ===============================================================================
 GROUP 40: FILE SYSTEM METADATA
 ===============================================================================
@@ -1031,7 +992,6 @@ GROUP 40: FILE SYSTEM METADATA
      - All files show recent access
      - Missing usage patterns
 
-
 ===============================================================================
 GROUP 41: HYPERVISOR MEMORY FORENSICS & HYPERCALL TRACING
 ===============================================================================
@@ -1054,7 +1014,6 @@ GROUP 41: HYPERVISOR MEMORY FORENSICS & HYPERCALL TRACING
      - Walk EPT/NPT tables
      - Detect split or shadow page tables
 
-
 ===============================================================================
 GROUP 42: VIRTUAL MACHINE GUEST AGENT COMMUNICATION
 ===============================================================================
@@ -1072,7 +1031,6 @@ GROUP 42: VIRTUAL MACHINE GUEST AGENT COMMUNICATION
      - Shared clipboard with host
      - Auto-sync behavior
 
-
 ===============================================================================
 GROUP 43: VIRTUALIZATION-AWARE MALWARE BEHAVIOR
 ===============================================================================
@@ -1088,7 +1046,6 @@ GROUP 43: VIRTUALIZATION-AWARE MALWARE BEHAVIOR
 43.3 SCREEN CAPTURE ARTIFACTS
      - Identical pixels across frames
      - No display noise or dithering
-
 
 ===============================================================================
 GROUP 44: LINUX-SPECIFIC KERNEL DETECTION
@@ -1110,7 +1067,6 @@ GROUP 44: LINUX-SPECIFIC KERNEL DETECTION
      - cat /sys/devices/system/clocksource/clocksource0/available_clocksource
      - "kvm-clock" present
 
-
 ===============================================================================
 GROUP 45: MACOS / APPLE SILICON VM DETECTION
 ===============================================================================
@@ -1130,7 +1086,6 @@ GROUP 45: MACOS / APPLE SILICON VM DETECTION
      - /Library/LaunchDaemons/com.vmware.*
      - /Library/LaunchAgents/com.oracle.*
 
-
 ===============================================================================
 GROUP 46: HARDWARE SECURITY MODULE (HSM) & TPM ARTIFACTS
 ===============================================================================
@@ -1146,7 +1101,6 @@ GROUP 46: HARDWARE SECURITY MODULE (HSM) & TPM ARTIFACTS
 46.3 SECURE BOOT DBX CHECKS
      - Blacklist contains VM-signed keys
      - No physical revocation updates
-
 
 ===============================================================================
 GROUP 47: EMULATION vs VIRTUALIZATION vs CONTAINER
@@ -1164,7 +1118,6 @@ GROUP 47: EMULATION vs VIRTUALIZATION vs CONTAINER
      - PID 1 namespace vs full init
      - /proc/1/exe → systemd vs bash
 
-
 ===============================================================================
 GROUP 48: AI / BEHAVIORAL ANOMALY DETECTION
 ===============================================================================
@@ -1180,7 +1133,6 @@ GROUP 48: AI / BEHAVIORAL ANOMALY DETECTION
 48.3 FILE ACCESS ENTROPY
      - High entropy in accessed paths = automation
      - Low entropy = human
-
 
 ===============================================================================
 GROUP 49: QUANTUM & FUTURE TECH DETECTION
@@ -1198,6 +1150,318 @@ GROUP 49: QUANTUM & FUTURE TECH DETECTION
      - Extreme slowdown in FHE libraries
      - Only seen in sandboxed analysis
 
+===============================================================================
+GROUP 50: EBPF & KERNEL TRACING DETECTION
+===============================================================================
+
+50.1 eBPF PROGRAM BEHAVIOR
+- eBPF verifier behavior differences in VMs
+- Maximum instruction limits vary
+- Helper function availability differences
+
+50.2 KPROBE/TRACEPOINT OVERHEAD
+- Kernel probe execution timing variations
+- Tracepoint collection latency differences
+- Ftrace buffer behavior under load
+
+50.3 BPF MAP PERFORMANCE
+- BPF hash map lookup timing consistency
+- Perfect performance in virtualized environments
+- Missing cache effects on map operations
+
+50.4 USERSPACE PROBES (UPROBES)
+- Uprobe attachment timing differences
+- Single-step execution behavior in VMs
+- Probe hit rate patterns
+
+===============================================================================
+GROUP 51: IOMMU & DIRECT MEMORY ACCESS DETECTION
+===============================================================================
+
+51.1 DMA REMAPPING BEHAVIOR
+- Intel VT-d / AMD-Vi presence checks
+- IOVA (I/O Virtual Address) mapping patterns
+- DMAR (DMA Remapping) ACPI table analysis
+
+51.2 PCI PASSTHROUGH ARTIFACTS
+- SR-IOV VF behavior differences
+- Physical vs virtual function detection
+- Direct assigned device interrupt handling
+
+51.3 ATS (ADDRESS TRANSLATION SERVICES)
+- ATC (Address Translation Cache) behavior
+- PRI (Page Request Interface) absence in VMs
+- IOTLB shootdown patterns
+
+51.4 SCOOTER MEMORY ACCESS PATTERNS
+- DMA from untrusted devices blocked
+- IOMMU fault handling differences
+- Device TLB missing in virtual environments
+
+===============================================================================
+GROUP 52: ADVANCED GPU VIRTUALIZATION DETECTION
+===============================================================================
+
+52.1 NVIDIA vGPU / MxGPU BEHAVIOR
+- vGPU manager presence detection
+- GPU time-slicing patterns
+- Frame buffer sharing artifacts
+
+52.2 GPU SR-IOV DETECTION
+- Virtual function performance characteristics
+- VFIO (Virtual Function I/O) container usage
+- Mediated device pass-through patterns
+
+52.3 GPU MEMORY BANDWIDTH
+- Memory bandwidth saturation points
+- VRAM allocation patterns
+- ECC memory behavior (always perfect in VMs)
+
+52.4 MULTI-GPU TOPOLOGY
+- PCIe bus positioning inconsistencies
+- Cross-GPU communication latency
+- NVLink absence in virtual environments
+
+===============================================================================
+GROUP 53: REAL-TIME KERNEL & SCHEDULING DETECTION
+===============================================================================
+
+53.1 REAL-TIME SCHEDULER LATENCY
+- SCHED_FIFO/SCHED_RR timing jitter
+- Scheduler clock resolution differences
+- Interrupt response time consistency
+
+53.2 PREEMPT_RT KERNEL BEHAVIOR
+- Spinlock to mutex conversion detection
+- Threaded IRQ behavior differences
+- Priority inheritance patterns
+
+53.3 DEADLINE SCHEDULING
+- SCHED_DEADLINE admission control
+- Runtime overrun behavior
+- Deadline miss patterns in VMs
+
+53.4 INTERRUPT AFFINITY
+- IRQ balancing differences
+- CPU affinity enforcement variations
+- Interrupt storm handling
+
+===============================================================================
+GROUP 54: QUANTUM & HARDWARE RANDOMNESS DETECTION
+===============================================================================
+
+54.1 HARDWARE RNG ABSENCE
+- RDSEED/RDRAND always available in VMs
+- No thermal noise source variations
+- Perfect entropy in /dev/random
+
+54.2 QUANTUM RNG DETECTION
+- Missing quantum random number generators
+- No hardware entropy source diversity
+- Software fallback patterns
+
+54.3 ENTROPY POOL BEHAVIOR
+- /proc/sys/kernel/random/entropy_avail always high
+- No entropy drought conditions
+- Consistent entropy accumulation rates
+
+54.4 CRYPTOGRAPHIC ACCELERATOR
+- AES-NI timing too consistent
+- No hardware SSL/TLS accelerators
+- Missing crypto offload engines
+
+===============================================================================
+GROUP 55: MODEM & COMMUNICATION HARDWARE DETECTION
+===============================================================================
+
+55.1 CELLULAR MODEM ABSENCE
+- No AT command interfaces
+- Missing /dev/ttyACM* modem devices
+- No baseband processor information
+
+55.2 5G/LTE HARDWARE INDICATORS
+- Missing QMI (Qualcomm MSM Interface)
+- No MBIM (Mobile Broadband Interface Model)
+- Absent modem firmware versions
+
+55.3 SIM CARD DETECTION
+- No SIM card reader hardware
+- Missing ICCID (Integrated Circuit Card Identifier)
+- No carrier provisioning information
+
+55.4 GPS/GNSS RECEIVERS
+- Missing satellite positioning hardware
+- No NMEA data streams
+- Absent location services hardware
+
+===============================================================================
+GROUP 56: HARDWARE SECURITY KEY DETECTION
+===============================================================================
+
+56.1 FIDO2/WEBAUTHN AUTHENTICATORS
+- No security keys (YubiKey, Titan Key)
+- Missing CTAP (Client to Authenticator Protocol)
+- No U2F (Universal 2nd Factor) devices
+
+56.2 PGP SMART CARDS
+- Missing OpenPGP card readers
+- No cryptographic token interfaces
+- Absent CCID (Chip/Smart Card Interface Devices)
+
+56.3 HSM (HARDWARE SECURITY MODULE) DETECTION
+- No PKCS#11 providers
+- Missing cryptographic accelerator cards
+- No hardware key storage
+
+56.4 TPM 2.0 vs fTPM BEHAVIOR
+- Firmware TPM performance characteristics
+- vTPM (Virtual TPM) behavioral differences
+- Attestation certificate patterns
+
+===============================================================================
+GROUP 57: EXTENDED REALITY (XR) HARDWARE DETECTION
+===============================================================================
+
+57.1 VR/AR HEADSET ABSENCE
+- No HMD (Head-Mounted Display) devices
+- Missing 6DOF (Six Degrees of Freedom) trackers
+- No motion controller interfaces
+
+57.2 ROOM-SCALE TRACKING
+- Missing lighthouse/base station devices
+- No inside-out tracking cameras
+- Absent spatial mapping sensors
+
+57.3 EYE TRACKING HARDWARE
+- No gaze detection systems
+- Missing pupil tracking sensors
+- Absent foveated rendering hardware
+
+57.4 HAPTIC FEEDBACK DEVICES
+- No force feedback controllers
+- Missing tactile response systems
+- Absent vibration motor controls
+
+===============================================================================
+GROUP 58: ENERGY HARVESTING & POWER MANAGEMENT
+===============================================================================
+
+
+58.1 POWER SOURCE DIVERSITY
+- Single power source (always AC)
+- No battery charge/discharge cycles
+- Missing multiple power supply detection
+
+58.2 ENERGY HARVESTING SENSORS
+- No solar/piezoelectric/thermal harvesting
+- Missing ambient energy conversion
+- Absent power management events
+
+58.3 DYNAMIC VOLTAGE SCALING
+- CPU voltage always stable
+- No frequency/voltage relationship
+- Missing power state transitions
+
+58.4 THERMAL THROTTLING PATTERNS
+- Consistent temperature readings
+- No thermal shutdown events
+- Perfect cooling system behavior
+
+===============================================================================
+GROUP 59: MEMORY COMPRESSION & ADVANCED STORAGE
+===============================================================================
+
+59.1 MEMORY COMPRESSION ARTIFACTS
+- Zswap/Zram behavior in Linux VMs
+- Memory compression ratio patterns
+- Swap compression differences
+
+59.2 TRANSPARENT HUGE PAGES
+- THP allocation patterns differ
+- Defragmentation behavior variations
+- Huge page fault handling
+
+59.3 MEMORY TIERING DETECTION
+- No heterogeneous memory (HBM+DDR)
+- Missing memory bandwidth tiers
+- Consistent memory access latencies
+
+59.4 PERSISTENT MEMORY (PMEM)
+- Intel Optane DCPMM absence
+- No NVDIMM (Non-Volatile DIMM) devices
+- Missing persistent memory namespaces
+
+===============================================================================
+GROUP 60: CONTROL-FLOW INTEGRITY & HARDWARE SECURITY
+===============================================================================
+
+60.1 CONTROL-FLOW ENFORCEMENT TECHNOLOGY (CET)
+- Shadow stack behavior in VMs
+- Indirect branch tracking differences
+- CET MSR (Model Specific Register) patterns
+
+60.2 POINTER AUTHENTICATION (PAC)
+- ARM Pointer Authentication Code behavior
+- Authentication failure patterns
+- Key diversity in virtual environments
+
+60.3 MEMORY PROTECTION KEYS (MPK)
+- PKRU register behavior differences
+- Protection key violations in VMs
+- Key assignment patterns
+
+60.4 SUPERVISOR MODE ACCESS PREVENTION (SMAP)
+- SMAP violation handling differences
+- User/supervisor mode transition timing
+- Access prevention effectiveness
+
+===============================================================================
+GROUP 61: KERNEL SECURITY & RANDOMIZATION
+===============================================================================
+
+61.1 KERNEL ADDRESS SPACE LAYOUT RANDOMIZATION (KASLR)
+- KASLR effectiveness measurements
+- Entropy quality in virtualized kernels
+- Module loading address patterns
+
+61.2 STACK CANARY BEHAVIOR
+- Canary value generation patterns
+- Stack protection effectiveness
+- Canary check timing variations
+
+61.3 KERNEL PAGE TABLE ISOLATION (KPTI)
+- CR3 switch overhead differences
+- Meltdown mitigation performance impact
+- Page table synchronization patterns
+
+61.4 RETURN ADDRESS SIGNING
+- ARM return address signing behavior
+- Authentication instruction timing
+- Signature validation patterns
+
+===============================================================================
+GROUP 62: FIRMWARE SECURITY & BOOT INTEGRITY
+===============================================================================
+
+62.1 SECURE BOOT KEY DIVERSITY
+- Limited PK/KEK/db key variety
+- Manufacturer key patterns
+- No user-enrolled keys
+
+62.2 BOOT GUARD & BOOT INTEGRITY
+- Intel Boot Guard measurements
+- ACM (Authenticated Code Module) behavior
+- Measured boot event consistency
+
+62.3 BIOS WRITE PROTECTION
+- No SPI flash write protection
+- BIOS region locking behavior
+- Firmware update mechanism differences
+
+62.4 UEFI SECURE VARIABLES
+- Variable authentication behavior
+- Time-based auth variable patterns
+- PKCS#7 signature verification
 
 ===============================================================================
                             DETECTION DIFFICULTY
@@ -1216,6 +1480,11 @@ EASY TO HIDE:
 - Environment variables
 - Shared folder mounts
 - Clipboard sync
+- eBPF program names
+- Kernel config fragments
+- Modem device strings
+- Energy harvesting sensors
+- Memory compression settings
 
 MEDIUM DIFFICULTY:
 - PCI device IDs
@@ -1229,6 +1498,11 @@ MEDIUM DIFFICULTY:
 - UEFI boot configuration
 - Kernel extensions (kexts)
 - VMCI/vsock channels
+- eBPF helper availability
+- IOMMU DMAR tables
+- GPU SR-IOV configurations
+- Real-time scheduler policies
+- Hardware RNG interfaces
 
 HARD TO HIDE:
 - CPUID hypervisor bit
@@ -1244,6 +1518,12 @@ HARD TO HIDE:
 - Syscall latency patterns
 - Hypercall frequency
 - EPT/NPT table structure
+- eBPF verifier behavior
+- DMA remapping patterns
+- GPU memory bandwidth
+- Real-time latency jitter
+- Quantum RNG absence
+
 
 VERY HARD TO HIDE:
 - Timing (RDTSC/RDTSCP/QPC)
@@ -1260,6 +1540,11 @@ VERY HARD TO HIDE:
 - I/O scheduler behavior
 - VMEXIT reason bursts
 - ML behavioral entropy
+- Kprobe/tracepoint overhead
+- PCI passthrough interrupt timing
+- Memory tiering access patterns
+- Control-flow integrity enforcement
+- Kernel randomization entropy quality
 
 
 ===============================================================================
@@ -1286,6 +1571,16 @@ VERY HARD TO HIDE:
 18. Combined peripheral + behavior analysis approaches 99% accuracy
 19. Hypervisor memory forensics bypasses most stealth techniques
 20. Behavioral ML models detect automation even in hardened VMs
+21. eBPF and kernel tracing provide new detection vectors through runtime behavior analysis
+22. IOMMU and DMA patterns reveal virtualized I/O memory management
+23. Advanced GPU virtualization still leaves performance artifacts despite improvements
+24. Real-time scheduling exposes hypervisor-induced latency variations
+25. Hardware security features (CET, PAC, SMAP) behave differently when virtualized
+26. Modern communication hardware (5G, GPS, modems) is consistently absent in VMs
+27. Energy management patterns differ significantly from physical hardware
+28. Memory compression and tiering show distinct patterns in virtualized environments
+29. Firmware security mechanisms have simplified implementations in virtual firmware
+30. Hardware security keys and HSMs are rarely virtualized with full functionality
 
 ===============================================================================
                                 END OF CATALOG
